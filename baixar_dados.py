@@ -134,6 +134,7 @@ def gerar_amostra(fracao: float = FRACAO_AMOSTRA, chunksize: int = 500_000) -> p
     como "Não respondeu" (ver docs/DECISOES.md).
     """
     funil = {"linhas_lidas": 0, "concluintes_2023": 0, "nao_treineiros": 0, "escola_informada": 0}
+    tp_escola_base = pd.Series(dtype="int64")  # distribuição de TP_ESCOLA antes de qualquer filtro
     blocos = []
 
     with zipfile.ZipFile(ARQ_ZIP) as z, z.open(CSV_DENTRO_DO_ZIP) as f:
@@ -141,6 +142,7 @@ def gerar_amostra(fracao: float = FRACAO_AMOSTRA, chunksize: int = 500_000) -> p
                              dtype=TIPOS_ENEM, chunksize=chunksize)
         for i, bloco in enumerate(leitor, start=1):
             funil["linhas_lidas"] += len(bloco)
+            tp_escola_base = tp_escola_base.add(bloco["TP_ESCOLA"].value_counts(), fill_value=0)
             bloco = bloco[bloco["TP_ST_CONCLUSAO"] == 2]
             funil["concluintes_2023"] += len(bloco)
             bloco = bloco[bloco["IN_TREINEIRO"] == 0]
@@ -172,6 +174,7 @@ def gerar_amostra(fracao: float = FRACAO_AMOSTRA, chunksize: int = 500_000) -> p
         "seed": SEED,
         "fracao_por_uf": fracao,
         "funil": funil,
+        "tp_escola_base_completa": {str(int(k)): int(v) for k, v in tp_escola_base.sort_index().items()},
         "linhas_amostra": int(len(amostra)),
         "universo_por_uf": {str(k): int(v) for k, v in universo_uf.items()},
         "amostra_por_uf": {str(k): int(v) for k, v in amostra_uf.items()},

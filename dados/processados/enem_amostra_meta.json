@@ -9,6 +9,11 @@
     "nao_treineiros": 1401164,
     "escola_informada": 1401159
   },
+  "tp_escola_base_completa": {
+    "1": 2532796,
+    "2": 1166540,
+    "3": 234619
+  },
   "linhas_amostra": 56048,
   "universo_por_uf": {
     "AC": 6967,

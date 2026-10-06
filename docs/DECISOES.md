@@ -102,3 +102,12 @@ Este arquivo registra as decisões técnicas do projeto e as incoerências encon
 
 ### D19. `n_jobs=-1` e mensagens do joblib no Windows
 - Com processamento paralelo, o *resource tracker* do joblib/loky imprime `KeyError` no stderr do terminal ao encerrar, no Windows. É um problema conhecido da biblioteca: **não aparece nas saídas do notebook** e não afeta os resultados (que são determinísticos: `random_state = 42` em split, CV, árvore e undersampling).
+
+---
+
+## Verificação final
+
+### D20. Verificação automatizada e rastreabilidade dos números
+- **Feito:** `ferramentas/verificar_entrega.py` confere a execução dos notebooks, os requisitos (20 KPIs, ≥ 8 gráficos, 4 modelos, conceitos 1–7), a coerência dos números e a higiene do repositório. Na coerência, todo número decimal ou de milhar citado no README e em `docs/` precisa existir nas saídas dos notebooks, em `resultados/metricas_entrega2.json`, nos metadados da amostra ou na tabela do IBGE. O teste negativo, com um valor inventado inserido de propósito, é detectado.
+- **Ajuste em `baixar_dados.py`:** os metadados da amostra passaram a registrar a distribuição de `TP_ESCOLA` na base completa (`tp_escola_base_completa`). Assim, as contagens citadas em D2 ficam rastreáveis. A amostra em si não mudou.
+- **Exceção declarada:** os números do protótipo exploratório citados em D13 (precisão ~0,15, recall ~0,80, F1 ~0,25 com `class_weight="balanced"`) não estão nos notebooks finais. Eles ficam numa lista explícita no verificador.

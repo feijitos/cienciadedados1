@@ -50,7 +50,13 @@ jupyter nbconvert --to notebook --execute --inplace Entrega1_ENEM_IBGE.ipynb
 jupyter nbconvert --to notebook --execute --inplace Entrega2_ENEM_IBGE.ipynb
 ```
 
-A amostra processada (`dados/processados/enem_amostra.parquet`, ~1 MB) e a tabela estadual (`dados/ibge_uf.csv`) **já estão no repositório**, então os notebooks rodam sem baixar nada. A Entrega 2 leva cerca de 1 minuto.
+A amostra processada (`dados/processados/enem_amostra.parquet`, ~1 MB) e a tabela estadual (`dados/ibge_uf.csv`) **já estão no repositório**, então os notebooks rodam sem baixar nada. A Entrega 1 roda em cerca de 20 segundos e a Entrega 2 em 1 a 2 minutos.
+
+Para conferir requisitos, coerência dos números e higiene do repositório depois de executar os notebooks:
+
+```bash
+python ferramentas/verificar_entrega.py
+```
 
 Para rodar sem os dados reais, mude `USAR_DADOS_REAIS = False` na primeira célula de código. Os notebooks passam a usar a simulação reprodutível da Entrega 1. A Entrega 2 continua funcionando nesse modo, mas com menos variáveis.
 
@@ -76,6 +82,8 @@ O script:
 ├── Entrega2_ENEM_IBGE.ipynb      # Entrega 2: EDA, features, modelos, avaliação, Gráficos 6–14
 ├── baixar_dados.py               # coleta: INEP (download + amostra) e IBGE (API SIDRA)
 ├── requirements.txt
+├── ferramentas/
+│   └── verificar_entrega.py      # checagem automática de requisitos, números e repositório
 ├── src/
 │   ├── dados.py                  # carga real/simulada, ETL e recorte de presentes
 │   ├── kpis.py                   # cálculo dos 20 KPIs
