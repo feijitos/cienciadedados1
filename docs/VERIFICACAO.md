@@ -50,7 +50,7 @@ Legenda: ✔ passou · ✘ falhou (nenhum item ficou em ✘ na rodada final)
 | ✔ | Tabelas de modelos idênticas ao JSON | linhas da tabela do README e números dos slides comparados célula a célula com `metricas_entrega2.json` |
 | ✔ | O verificador detecta erro | teste negativo: "0,437" e "612,9" inseridos nos slides são apontados como SEM ORIGEM |
 | ✔ | Insights do notebook não digitados à mão | gerados com `Markdown(f"...")` a partir das variáveis |
-| ✔ | Nenhum placeholder esquecido | busca pelos marcadores de pendência listados em `verificar_entrega.py` (siglas em maiúsculas e frases como "inserir aqui") em `.md`, `.py`, `.csv`, `.json` e nas células e saídas dos notebooks |
+| ✔ | Nenhum placeholder esquecido | busca pelos marcadores de pendência listados em `verificar_entrega.py` (siglas de pendência em maiúsculas e frases de preenchimento) em `.md`, `.py`, `.csv`, `.json` e nas células e saídas dos notebooks |
 
 ## 4. Repositório
 
