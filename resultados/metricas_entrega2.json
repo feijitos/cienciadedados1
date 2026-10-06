@@ -4,7 +4,7 @@
     "presentes_validos": 42032,
     "treino": 33625,
     "teste": 8407,
-    "taxa_alto_desempenho": 0.0405,
+    "taxa_alto_desempenho": 0.040541,
     "features_num": [
       "LOG_RENDA_PC",
       "N_MORADORES",
@@ -26,7 +26,7 @@
   "kpis": {
     "1": {
       "kpi": "Média Geral por UF (melhor UF)",
-      "valor": 561.1644,
+      "valor": 561.164417,
       "obs": "MG | pior: AM (494.4)"
     },
     "2": {
@@ -36,32 +36,32 @@
     },
     "3": {
       "kpi": "Desvio-padrão de Exatas (CN+MT)",
-      "valor": 98.8112,
+      "valor": 98.811243,
       "obs": ""
     },
     "4": {
       "kpi": "Taxa de Notas > 700 (Nota Final)",
-      "valor": 4.0541,
+      "valor": 4.054054,
       "obs": ""
     },
     "5": {
       "kpi": "Taxa de Zeros na Redação",
-      "valor": 4.1112,
+      "valor": 4.111153,
       "obs": ""
     },
     "6": {
       "kpi": "Média de Renda por UF (índice Q006, maior)",
-      "valor": 5.274,
+      "valor": 5.274005,
       "obs": "SC | menor: CE (1.82)"
     },
     "7": {
       "kpi": "% Escola Pública",
-      "valor": 83.4285,
+      "valor": 83.42849,
       "obs": "Privada: 16.6%"
     },
     "8": {
       "kpi": "Razão de Notas Privada/Pública",
-      "valor": 1.1958,
+      "valor": 1.195847,
       "obs": "Privada 616.1 vs Pública 515.2"
     },
     "9": {
@@ -71,32 +71,32 @@
     },
     "10": {
       "kpi": "% Abstenção",
-      "valor": 24.8483,
+      "valor": 24.848344,
       "obs": ""
     },
     "11": {
       "kpi": "Correlação IDH × Nota Média (Pearson, nível UF)",
-      "valor": 0.714,
+      "valor": 0.71401,
       "obs": "n = 27 UFs"
     },
     "12": {
       "kpi": "Gap de Nota: UF de maior vs menor renda per capita",
-      "valor": 58.0146,
+      "valor": 58.014619,
       "obs": "DF − MA"
     },
     "13": {
       "kpi": "Densidade de Inscritos / 100 mil hab. (amostra)",
-      "valor": 27.5989,
+      "valor": 27.598873,
       "obs": "maior UF: CE (49.55)"
     },
     "14": {
       "kpi": "Taxa de Abstenção por Renda (Baixa − Alta)",
-      "valor": 19.7602,
+      "valor": 19.760158,
       "obs": "Baixa 29.6% | Média 18.6% | Alta 9.9%"
     },
     "15": {
       "kpi": "Índice de Desigualdade Regional (CV das médias por UF)",
-      "valor": 4.2774,
+      "valor": 4.277364,
       "obs": ""
     },
     "16": {
@@ -106,147 +106,147 @@
     },
     "17": {
       "kpi": "Média Geral de Presença",
-      "valor": 74.9929,
+      "valor": 74.992863,
       "obs": ""
     },
     "18": {
       "kpi": "% Alunos Baixa Renda com Nota > 600",
-      "valor": 14.2967,
+      "valor": 14.296748,
       "obs": "base: 25,894 alunos"
     },
     "19": {
       "kpi": "Maior Nota Geral",
-      "valor": 820.38,
+      "valor": 820.379993,
       "obs": ""
     },
     "20": {
       "kpi": "Menor Nota Geral",
-      "valor": 57.62,
+      "valor": 57.620001,
       "obs": ""
     }
   },
   "regressao_linear": {
     "teste": {
-      "R²": 0.2993,
-      "MAE": 62.7152,
-      "RMSE": 79.5612
+      "R²": 0.299305,
+      "MAE": 62.71523,
+      "RMSE": 79.561243
     },
     "treino": {
-      "R²": 0.3098,
-      "MAE": 63.1718,
-      "RMSE": 79.7822
+      "R²": 0.309762,
+      "MAE": 63.17185,
+      "RMSE": 79.782191
     },
     "cv_media": {
-      "R²": 0.3087,
-      "MAE": 63.2114,
-      "RMSE": 79.8354
+      "R²": 0.308746,
+      "MAE": 63.211445,
+      "RMSE": 79.835408
     },
     "cv_dp": {
-      "R²": 0.0055,
-      "MAE": 0.6997,
-      "RMSE": 0.7595
+      "R²": 0.005515,
+      "MAE": 0.699704,
+      "RMSE": 0.759544
     },
     "coeficientes": {
-      "COR_RACA_Indígena": -35.6373,
-      "COR_RACA_Preta": -21.6419,
-      "COR_RACA_Não declarada": -16.7817,
-      "COR_RACA_Parda": -15.0033,
-      "COR_RACA_Amarela": -13.5965,
-      "ATRASO_ESCOLAR": -10.3202,
-      "REGIAO_Norte": -7.6187,
-      "IDH_ESTADUAL": -7.3431,
-      "SEXO_Masculino": -5.2115,
-      "N_MORADORES": -3.1497,
-      "TEM_INTERNET": 3.6127,
-      "ESC_PAI": 4.7049,
-      "REGIAO_Sul": 5.326,
-      "REGIAO_Centro-Oeste": 6.3212,
-      "ESC_MAE": 7.703,
-      "FAIXA_RENDA_Alta Renda": 8.6616,
-      "N_COMPUTADORES": 11.4993,
-      "FAIXA_RENDA_Média Renda": 12.0134,
-      "LOG_RENDA_PC": 12.6943,
-      "REGIAO_Sudeste": 15.5347,
-      "TP_ESCOLA_Privada": 43.3505
+      "COR_RACA_Indígena": -35.637329,
+      "COR_RACA_Preta": -21.641871,
+      "COR_RACA_Não declarada": -16.781692,
+      "COR_RACA_Parda": -15.003251,
+      "COR_RACA_Amarela": -13.596478,
+      "ATRASO_ESCOLAR": -10.320249,
+      "REGIAO_Norte": -7.61867,
+      "IDH_ESTADUAL": -7.343139,
+      "SEXO_Masculino": -5.211473,
+      "N_MORADORES": -3.14971,
+      "TEM_INTERNET": 3.612723,
+      "ESC_PAI": 4.704943,
+      "REGIAO_Sul": 5.325974,
+      "REGIAO_Centro-Oeste": 6.321166,
+      "ESC_MAE": 7.702991,
+      "FAIXA_RENDA_Alta Renda": 8.661637,
+      "N_COMPUTADORES": 11.499277,
+      "FAIXA_RENDA_Média Renda": 12.013368,
+      "LOG_RENDA_PC": 12.694276,
+      "REGIAO_Sudeste": 15.534733,
+      "TP_ESCOLA_Privada": 43.350455
     }
   },
   "classificacao": {
     "Regressão Logística": {
       "hiperparametros": "C=0.01, class_weight={0: 1, 1: 6}",
-      "cv_f1_media": 0.3441,
-      "cv_f1_dp": 0.0193,
+      "cv_f1_media": 0.344137,
+      "cv_f1_dp": 0.019273,
       "treino": {
-        "Acurácia": 0.917,
-        "Precisão": 0.2561,
-        "Recall": 0.5503,
-        "F1": 0.3495,
-        "ROC-AUC": 0.894
+        "Acurácia": 0.916967,
+        "Precisão": 0.25606,
+        "Recall": 0.550257,
+        "F1": 0.349487,
+        "ROC-AUC": 0.893986
       },
       "teste": {
-        "Acurácia": 0.9201,
-        "Precisão": 0.2534,
-        "Recall": 0.4985,
-        "F1": 0.336,
-        "ROC-AUC": 0.8716
+        "Acurácia": 0.920067,
+        "Precisão": 0.253353,
+        "Recall": 0.498534,
+        "F1": 0.335968,
+        "ROC-AUC": 0.871583
       }
     },
     "Árvore de Decisão": {
       "hiperparametros": "class_weight={0: 1, 1: 6}, max_depth=5, min_samples_leaf=50",
-      "cv_f1_media": 0.3392,
-      "cv_f1_dp": 0.0205,
+      "cv_f1_media": 0.339195,
+      "cv_f1_dp": 0.020504,
       "treino": {
-        "Acurácia": 0.9091,
-        "Precisão": 0.2463,
-        "Recall": 0.6031,
-        "F1": 0.3498,
-        "ROC-AUC": 0.8925
+        "Acurácia": 0.909115,
+        "Precisão": 0.246329,
+        "Recall": 0.603081,
+        "F1": 0.349787,
+        "ROC-AUC": 0.892546
       },
       "teste": {
-        "Acurácia": 0.9092,
-        "Precisão": 0.2295,
-        "Recall": 0.5249,
-        "F1": 0.3194,
-        "ROC-AUC": 0.8624
+        "Acurácia": 0.909242,
+        "Precisão": 0.229487,
+        "Recall": 0.524927,
+        "F1": 0.319358,
+        "ROC-AUC": 0.862369
       }
     },
     "KNN": {
       "hiperparametros": "n_neighbors=201, weights=uniform, sampling_strategy=0.2",
-      "cv_f1_media": 0.3502,
-      "cv_f1_dp": 0.0193,
+      "cv_f1_media": 0.350206,
+      "cv_f1_dp": 0.019255,
       "treino": {
-        "Acurácia": 0.9261,
-        "Precisão": 0.2707,
-        "Recall": 0.4864,
-        "F1": 0.3478,
-        "ROC-AUC": 0.891
+        "Acurácia": 0.926067,
+        "Precisão": 0.270723,
+        "Recall": 0.486427,
+        "F1": 0.347849,
+        "ROC-AUC": 0.890986
       },
       "teste": {
-        "Acurácia": 0.9295,
-        "Precisão": 0.2717,
-        "Recall": 0.4399,
-        "F1": 0.3359,
-        "ROC-AUC": 0.8637
+        "Acurácia": 0.929464,
+        "Precisão": 0.271739,
+        "Recall": 0.439883,
+        "F1": 0.335946,
+        "ROC-AUC": 0.863706
       }
     }
   },
   "overfitting_arvore": {
     "melhor_profundidade_cv": 5,
-    "f1_treino_prof20": 0.8178,
-    "f1_val_prof20": 0.2085
+    "f1_treino_prof20": 0.81781,
+    "f1_val_prof20": 0.208522
   },
   "insights": {
-    "nota_privada": 616.1352,
-    "nota_publica": 515.2291,
-    "alto_desemp_privada_pct": 15.0857,
-    "alto_desemp_publica_pct": 1.1538,
-    "nota_baixa_renda": 506.2017,
+    "nota_privada": 616.135227,
+    "nota_publica": 515.229086,
+    "alto_desemp_privada_pct": 15.085714,
+    "alto_desemp_publica_pct": 1.153777,
+    "nota_baixa_renda": 506.201675,
     "nota_alta_renda": 620.4827,
-    "abstencao_baixa_pct": 29.643,
-    "abstencao_alta_pct": 9.8828,
+    "abstencao_baixa_pct": 29.642983,
+    "abstencao_alta_pct": 9.882825,
     "uf_maior_media": "MG",
     "uf_menor_media": "AM",
-    "media_uf_max": 561.1644,
-    "media_uf_min": 494.4008,
+    "media_uf_max": 561.164417,
+    "media_uf_min": 494.400788,
     "melhor_modelo_f1_teste": "Regressão Logística",
     "melhor_modelo_auc_teste": "Regressão Logística",
     "melhor_modelo_cv": "KNN",
