@@ -1,0 +1,20 @@
+# Dados brutos do INEP (zip ~550 MB): baixar com `python baixar_dados.py`
+dados/brutos/
+
+# Ambiente virtual e caches
+.venv/
+venv*/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Arquivos grandes / temporários
+*.zip
+*.part
+*.csv.gz
+
+# Sistema operacional / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
