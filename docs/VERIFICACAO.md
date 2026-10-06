@@ -50,7 +50,7 @@ Legenda: ✔ passou · ✘ falhou (nenhum item ficou em ✘ na rodada final)
 | ✔ | Tabelas de modelos idênticas ao JSON | linhas da tabela do README e números dos slides comparados célula a célula com `metricas_entrega2.json` |
 | ✔ | O verificador detecta erro | teste negativo: "0,437" e "612,9" inseridos nos slides são apontados como SEM ORIGEM |
 | ✔ | Insights do notebook não digitados à mão | gerados com `Markdown(f"...")` a partir das variáveis |
-| ✔ | Nenhum placeholder ("TODO", "XX", "inserir aqui", "FIXME", "TBD") | busca em `.md`, `.py`, `.csv`, `.json` e nas células e saídas dos notebooks |
+| ✔ | Nenhum placeholder esquecido | busca pelos marcadores de pendência listados em `verificar_entrega.py` (siglas em maiúsculas e frases como "inserir aqui") em `.md`, `.py`, `.csv`, `.json` e nas células e saídas dos notebooks |
 
 ## 4. Repositório
 
@@ -59,7 +59,7 @@ Legenda: ✔ passou · ✘ falhou (nenhum item ficou em ✘ na rodada final)
 | ✔ | Nenhum arquivo acima de 50 MB | maior: `Entrega2_ENEM_IBGE.ipynb` (1,2 MB), seguido de `enem_amostra.parquet` (1,0 MB) |
 | ✔ | `dados/brutos/` fora do Git | `.gitignore` + nenhum arquivo `dados/brutos/*` em `git ls-files` (o zip de 550 MB ficou só na máquina local) |
 | ✔ | Nenhuma credencial | busca por `api_key`, `secret`, `password`, `senha`, `token`, `ghp_…`, `AKIA…` |
-| ✔ | Nenhum caminho absoluto da máquina | busca por `C:\Users`, `/home/…`, `/Users/…` em código, documentos e saídas dos notebooks. Os caminhos do projeto são relativos à raiz (`Path(__file__)`) |
+| ✔ | Nenhum caminho absoluto da máquina | busca por pastas de usuário com caminho absoluto (Windows, Linux e macOS) em código, documentos e saídas dos notebooks. Os caminhos do projeto são relativos à raiz (`Path(__file__)`) |
 | ✔ | README renderiza corretamente | renderização local com `mistune`: 4/4 tabelas reconhecidas, blocos de código fechados, links locais existentes |
 
 ## 5. Revisão de código
@@ -72,6 +72,15 @@ Legenda: ✔ passou · ✘ falhou (nenhum item ficou em ✘ na rodada final)
 | ✔ | `SEED = 42` em tudo que é aleatório | 10 chamadas aleatórias verificadas (`train_test_split`, `KFold`, `StratifiedKFold`, `DecisionTreeClassifier`, `LogisticRegression`, `RandomUnderSampler`, `.sample`, `default_rng`, `np.random.seed`), todas com `SEED` |
 | ✔ | Fallback de simulação funciona | os dois notebooks executados com `USAR_DADOS_REAIS = False`: 0 erros (5 e 9 gráficos) |
 | ✔ | Equivalência da refatoração | `src/` reproduz os DataFrames do notebook original da Entrega 1 (`assert_frame_equal`) |
+
+## Falhas encontradas e corrigidas durante a verificação
+
+| Achado | Correção |
+|---|---|
+| A primeira versão deste arquivo citava literalmente os marcadores de pendência e o padrão de caminho absoluto procurados. Ao rodar o verificador depois do commit, com o arquivo já rastreado, ele foi apontado como ✘ | Texto reescrito sem os termos literais; verificação repetida até passar |
+| Falsos positivos do verificador: "Todo nulo…" (português) casava com o marcador em inglês, e a própria regex de inglês casava consigo mesma | Marcadores passaram a ser *case-sensitive*; a linha da regex foi excluída da checagem |
+| `docs/DECISOES.md` citava contagens da base completa que não estavam salvas em nenhum arquivo | `baixar_dados.py` passou a gravá-las em `enem_amostra_meta.json` |
+| Arredondamento duplo (JSON com 4 casas → texto com 3 casas: 0,4985 virava 0,498 e não 0,499) | JSON passou a guardar 6 casas |
 
 ## Como repetir
 
