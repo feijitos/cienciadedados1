@@ -362,16 +362,54 @@ def tabela_mae_renda(dm):
     return media.where(n >= MIN_N), n
 
 
+TEXTO_CLARO, TEXTO_ESCURO = "#ffffff", "#141414"  # fora do mapa ESCURO: as células não mudam de cor com o tema
+
+
+def _luminancia(hex_):
+    """Luminância relativa (WCAG) de uma cor #rrggbb."""
+    c = [int(hex_[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+    c = [v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4 for v in c]
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+
+
+def _cor_na_escala(escala, t):
+    """Cor (#rrggbb) na posição t ∈ [0, 1] de uma escala [[pos, cor], ...], interpolando em RGB como o Plotly."""
+    for (p0, c0), (p1, c1) in zip(escala, escala[1:]):
+        if t <= p1:
+            f = 0 if p1 == p0 else (t - p0) / (p1 - p0)
+            rgb = [round(int(c0[i:i + 2], 16) + f * (int(c1[i:i + 2], 16) - int(c0[i:i + 2], 16))) for i in (1, 3, 5)]
+            return "#" + "".join(f"{v:02x}" for v in rgb)
+    return escala[-1][1]
+
+
+def _texto_contraste(fundo):
+    """Texto claro ou escuro, o que tiver mais contraste com o fundo."""
+    l = _luminancia(fundo)
+    contraste = {TEXTO_CLARO: 1.05 / (l + 0.05), TEXTO_ESCURO: (l + 0.05) / (_luminancia(TEXTO_ESCURO) + 0.05)}
+    return max(contraste, key=contraste.get)
+
+
 def grafico_mae_renda(media, n):
-    """Mapa de calor: nota média por escolaridade da mãe × faixa de renda."""
+    """Mapa de calor: nota média por escolaridade da mãe × faixa de renda.
+    Os números são anotações por célula, com a cor do texto escolhida pela luminância da cor da célula."""
+    escala = [[0, RAMPA_AZUL[0]], [0.5, RAMPA_AZUL[1]], [1, RAMPA_AZUL[2]]]
+    z = media.values.round(1)
+    zmin, zmax = float(np.nanmin(z)), float(np.nanmax(z))
+    rotulos = []
+    for i, esc in enumerate(ESC_ROTULOS):
+        for j, faixa in enumerate(ORDEM_RENDA):
+            if np.isnan(z[i, j]):
+                continue
+            fundo = _cor_na_escala(escala, (z[i, j] - zmin) / (zmax - zmin))
+            rotulos.append(dict(x=faixa, y=esc, text=_num(media.values[i, j], 0), showarrow=False,
+                                font=dict(color=_texto_contraste(fundo), size=13)))
     fig = go.Figure(go.Heatmap(
-        z=media.values.round(1), x=ORDEM_RENDA, y=ESC_ROTULOS, customdata=n.values, hoverongaps=False,
-        colorscale=[[0, RAMPA_AZUL[0]], [0.5, RAMPA_AZUL[1]], [1, RAMPA_AZUL[2]]], texttemplate="%{z:.0f}",
-        textfont=dict(size=13), colorbar=dict(title=dict(text="pts"), thickness=10, outlinewidth=0,
-                                              tickfont=dict(color=TINTA_SECUNDARIA)), xgap=2, ygap=2,
+        z=z, x=ORDEM_RENDA, y=ESC_ROTULOS, customdata=n.values, hoverongaps=False, colorscale=escala,
+        zmin=zmin, zmax=zmax, colorbar=dict(title=dict(text="pts"), thickness=10, outlinewidth=0,
+                                            tickfont=dict(color=TINTA_SECUNDARIA)), xgap=2, ygap=2,
         hovertemplate="Mãe: %{y}<br>Renda: %{x}<br>Nota média: %{z:.1~f} pts<br>Alunos: %{customdata:,.0f}<extra></extra>"))
     _base(fig, 440).update_layout(margin=dict(l=130, r=16, t=10, b=40), xaxis=dict(side="bottom", showgrid=False),
-                                  yaxis=dict(showgrid=False))
+                                  yaxis=dict(showgrid=False), annotations=rotulos)
     return _responsivo(fig, movel={"margin.l": 112, "font.size": 11}, desktop={"margin.l": 130, "font.size": 13},
                        dados_movel=[({"showscale": False}, [0])], dados_desktop=[({"showscale": True}, [0])])
 
@@ -743,11 +781,11 @@ def main():
     r_renda = aux["tab_uf"]["RENDA_PER_CAPITA"].corr(aux["tab_uf"]["NOTA_MEDIA"])
     acima700 = df_pres.groupby("TP_ESCOLA")["NOTA_FINAL"].apply(lambda s: (s > 700).mean() * 100)
 
-    manchete = (f"No ENEM 2023, a escola privada tirou {_num(dif_escola)} pontos a mais que a pública, e só "
+    manchete = (f"No ENEM 2023, os alunos da escola privada tiraram {_num(dif_escola)} pontos a mais que os da pública, e só "
                 f"{_pct(baixa_600)} dos alunos de baixa renda passaram de 600")
     dek = (f"Cruzamos as notas de {_br(len(df_pres), 0)} concluintes do ensino médio que fizeram as cinco provas "
            f"(numa amostra de {_br(len(df), 0)} inscritos nos microdados do INEP) com indicadores dos estados do IBGE "
-           "e do PNUD. A desigualdade aparece na escola, na renda da família e no mapa.")
+           "e do PNUD. A desigualdade aparece na escola, na renda da família e no estado onde o aluno faz a prova.")
 
     destaques = [
         ("renda", 2, "Escola", f'{_sinal(dif_escola)}<small>pts</small>',
