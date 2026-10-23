@@ -18,6 +18,7 @@ import re
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import plotly.graph_objects as go
 from plotly.offline import get_plotlyjs, get_plotlyjs_version
 
@@ -297,6 +298,146 @@ def grafico_idh(tab_uf):
     return _responsivo(fig, movel={"margin.l": 44}, desktop={"margin.l": 50},
                        dados_movel=[({"mode": "markers", "marker.sizeref": sizeref_movel}, list(range(n)))],
                        dados_desktop=[({"mode": "markers+text", "marker.sizeref": sizeref}, list(range(n)))])
+
+
+# --------------------------------------------------------------------------
+# A) Território: mapa por UF com filtros (médias recalculadas no navegador)
+# --------------------------------------------------------------------------
+MALHA = RAIZ / "dados" / "malha_uf_ibge.geojson"  # IBGE, API de Malhas v3 (qualidade mínima), coordenadas com 3 casas
+MIN_CUBO = 5  # células do cubo combinado com menos alunos não vão para o HTML
+GRUPO_MAE = {"A": "Até fundamental", "B": "Até fundamental", "C": "Até fundamental", "D": "Até fundamental",
+             "E": "Médio", "F": "Superior ou pós", "G": "Superior ou pós", "H": "Não sabe"}
+# (chave, rótulo, texto de "todos", valores na ordem do <select>, função que dá a categoria de cada aluno)
+FILTROS = [
+    ("escola", "Tipo de escola", "Todas", ["Pública", "Privada"], lambda d: d["TP_ESCOLA"].astype(str)),
+    ("renda", "Faixa de renda", "Todas", ["Baixa", "Média", "Alta"],
+     lambda d: d["FAIXA_RENDA"].astype(str).str.replace(" Renda", "", regex=False)),
+    ("sexo", "Sexo", "Todos", ["Feminino", "Masculino"], lambda d: d["SEXO"].astype(str)),
+    ("cor", "Cor/raça", "Todas", ["Branca", "Preta", "Parda", "Outras ou não declarada"],
+     lambda d: d["COR_RACA"].where(d["COR_RACA"].isin(["Branca", "Preta", "Parda"]), "Outras ou não declarada")),
+    ("mae", "Escolaridade da mãe", "Todas", ["Até fundamental", "Médio", "Superior ou pós", "Não sabe"],
+     lambda d: d["Q002"].astype(str).map(GRUPO_MAE)),
+    ("internet", "Internet em casa", "Todos", ["Com", "Sem"], lambda d: d["TEM_INTERNET"].map({1: "Com", 0: "Sem"})),
+]
+# Escala do mapa: mais intenso = maior nota nos dois temas (branco -> azul-escuro no claro;
+# azul-acinzentado quase da cor do fundo -> azul claro brilhante no escuro). Cinza = amostra insuficiente.
+ESCALA_MAPA = {"claro": [[0, "#ffffff"], [0.35, RAMPA_AZUL[0]], [0.7, RAMPA_AZUL[1]], [1, RAMPA_AZUL[2]]],
+               "escuro": [[0, "#26303d"], [0.35, "#1c5cab"], [0.7, "#3987e5"], [1, "#86b6ef"]]}
+CINZA_MAPA = {"claro": "#b9b8b0", "escuro": "#4a4945"}
+
+
+def dados_mapa(dm, df_ibge, media_uf):
+    """Tabelas agregadas para o mapa (nunca dados individuais):
+    - todos: UF × prova, exata (sem filtro);
+    - um: UF × valor de cada filtro, exata; somas só nas UFs com n >= MIN_N (as demais ficam cinza de qualquer jeito);
+    - cubo: UF × combinação de todos os filtros, só células com n >= MIN_CUBO (usado com 2+ filtros; aproximado).
+    Somas guardadas × 10 como inteiros (1 casa decimal). Devolve (dados para o JS, resumo para o relatório)."""
+    # código IBGE de cada UF (liga à propriedade "codarea" da malha)
+    ibge = pd.read_csv(RAIZ / "dados" / "ibge_uf.csv", dtype={"CO_UF": str}).sort_values("CO_UF")
+    assert sorted(ibge["UF"]) == sorted(df_ibge["UF"]) and len(ibge) == 27
+    ufs, codigos = ibge["UF"].tolist(), ibge["CO_UF"].tolist()
+    pos_uf = {u: i for i, u in enumerate(ufs)}
+    provas = list(PROVAS)
+    d = dm[["UF"] + provas].copy()
+    d["_uf"] = d["UF"].map(pos_uf)
+    radices = [len(vals) for _, _, _, vals, _ in FILTROS]
+    for chave, _, _, vals, f in FILTROS:
+        d[chave] = f(dm).map({v: i for i, v in enumerate(vals)})
+        assert d[chave].notna().all(), f"categoria sem grupo no filtro {chave}"
+    assert d["_uf"].notna().all()
+
+    def somas(g):
+        return [[int(round(v * 10)) for v in g[p]] for p in provas]
+
+    def tabela_uf(sub):
+        g = sub.groupby("_uf")[provas].sum().reindex(range(len(ufs)), fill_value=0)
+        n = sub.groupby("_uf").size().reindex(range(len(ufs)), fill_value=0)
+        s = somas(g)
+        s = [[v if n.iloc[i] >= MIN_N else None for i, v in enumerate(col)] for col in s]
+        nac = {"n": int(len(sub)), "s": [int(round(sub[p].sum() * 10)) for p in provas]}
+        assert len(sub) >= MIN_N, "filtro único com amostra nacional pequena"
+        return {"n": n.astype(int).tolist(), "s": s, "nac": nac}
+
+    todos = tabela_uf(d)
+    # consistência com os notebooks: sem filtro, a média do mapa é a média por UF de calcular_kpis
+    for i, u in enumerate(ufs):
+        assert abs(todos["s"][0][i] / 10 / todos["n"][i] - media_uf[u]) < 0.05, u
+    um = {chave: [tabela_uf(d[d[chave] == v]) for v in range(len(vals))] for chave, _, _, vals, _ in FILTROS}
+
+    combo = np.zeros(len(d), dtype=int)
+    for (chave, *_), r in zip(FILTROS, radices):
+        combo = combo * r + d[chave].astype(int).to_numpy()
+    d["_k"] = d["_uf"].astype(int).to_numpy() * int(np.prod(radices)) + combo
+    g = d.groupby("_k")[provas].sum()
+    n = d.groupby("_k").size()
+    ok = n >= MIN_CUBO
+    cubo = {"k": n.index[ok].astype(int).tolist(), "n": n[ok].astype(int).tolist(), "s": somas(g[ok])}
+
+    # faixa de cor fixa por prova: percentis 2 e 98 das médias por UF (n >= MIN_N) em todos os estados de filtro
+    medias = {p: [] for p in provas}
+    chaves = [c for c, *_ in FILTROS]
+    for m in range(1 << len(chaves)):
+        sel = [c for j, c in enumerate(chaves) if m >> j & 1]
+        gg = d.groupby(["_uf"] + sel)
+        nn, mm = gg.size(), gg[provas].mean()
+        for p in provas:
+            medias[p] += mm.loc[nn >= MIN_N, p].tolist()
+    faixa = [[float(np.floor(np.percentile(medias[p], 2) / 5) * 5), float(np.ceil(np.percentile(medias[p], 98) / 5) * 5)]
+             for p in provas]
+
+    js = {"ufs": ufs, "cod": codigos, "provas": [PROVAS[p] for p in provas], "radices": radices,
+          "filtros": [c for c, *_ in FILTROS], "minN": MIN_N, "todos": todos, "um": um, "cubo": cubo,
+          "faixa": faixa, "escala": ESCALA_MAPA, "cinza": CINZA_MAPA}
+    resumo = {"celulas_cubo": len(cubo["k"]), "celulas_omitidas": int((~ok).sum()), "alunos_omitidos": int(n[~ok].sum()),
+              "alunos": int(len(d)), "menor_n_cubo": int(n[ok].min())}
+    return js, resumo
+
+
+def grafico_mapa(js):
+    """Mapa coroplético por UF (estado inicial: sem filtro, nota final). O JS da página recalcula ao mudar os filtros."""
+    geo = json.loads(MALHA.read_text(encoding="utf-8"))
+    t = js["todos"]
+    nac = t["nac"]["s"][0] / 10 / t["nac"]["n"]
+    medias = [s / 10 / n for s, n in zip(t["s"][0], t["n"])]
+    cd = [[u, round(m, 1), n, round(m - nac, 1)] for u, m, n in zip(js["ufs"], medias, t["n"])]
+    fig = go.Figure()
+    fig.add_choropleth(
+        geojson=geo, featureidkey="properties.codarea", locations=js["cod"], z=[round(m, 1) for m in medias],
+        zmin=js["faixa"][0][0], zmax=js["faixa"][0][1], colorscale=ESCALA_MAPA["claro"], customdata=cd,
+        marker=dict(line=dict(color=EIXO, width=0.6)),
+        # barra sempre deitada, embaixo do mapa (trocar a orientação depois de desenhado deixa restos no Plotly)
+        colorbar=dict(title=dict(text="pts", font=dict(color=TINTA_SECUNDARIA), side="top"), thickness=10, len=0.5,
+                      outlinewidth=0, tickfont=dict(color=TINTA_SECUNDARIA), orientation="h", x=0.5, xanchor="center",
+                      y=0, yanchor="top"),
+        hovertemplate="<b>%{customdata[0]}</b><br>Nota média: %{customdata[1]:.1~f} pts<br>Alunos: %{customdata[2]:,.0f}"
+                      "<br>%{customdata[3]:+.1~f} em relação à média nacional<br>(com os mesmos filtros)<extra></extra>")
+    # UFs com amostra insuficiente (vazio no estado inicial). A malha não vai duas vezes no HTML:
+    # o JS copia a do primeiro traço para este ao carregar.
+    fig.add_choropleth(
+        geojson={"type": "FeatureCollection", "features": []}, featureidkey="properties.codarea", locations=[], z=[], customdata=[], showscale=False,
+        colorscale=[[0, CINZA_MAPA["claro"]], [1, CINZA_MAPA["claro"]]], zmin=0, zmax=1,
+        marker=dict(line=dict(color=EIXO, width=0.6)),
+        hovertemplate="<b>%{customdata[0]}</b><br>Amostra insuficiente (%{customdata[1]})<extra></extra>")
+    _base(fig, 560).update_layout(
+        margin=dict(l=0, r=0, t=0, b=50),
+        geo=dict(fitbounds="locations", visible=False, bgcolor="rgba(0,0,0,0)", projection=dict(type="mercator")))
+    return _responsivo(fig, movel={"height": 440}, desktop={"height": 560},
+                       dados_movel=[({"colorbar.len": 0.9}, [0])], dados_desktop=[({"colorbar.len": 0.5}, [0])])
+
+
+def html_filtros():
+    opcoes = "".join(f'<option value="{i}">{html.escape(r)}</option>' for i, r in enumerate(PROVAS.values()))
+    campos = [f'<div class="campo"><label for="f-prova">Prova</label><select id="f-prova">{opcoes}</select></div>']
+    for chave, rotulo, todos, vals, _ in FILTROS:
+        ops = f'<option value="-1">{todos}</option>' + "".join(
+            f'<option value="{i}">{html.escape(v)}</option>' for i, v in enumerate(vals))
+        campos.append(f'<div class="campo"><label for="f-{chave}">{rotulo}</label>'
+                      f'<select id="f-{chave}" data-filtro="{chave}">{ops}</select></div>')
+    return (f'<div class="filtros" role="group" aria-label="Filtros do mapa">{"".join(campos)}'
+            '<button type="button" id="f-limpar">Limpar filtros</button></div>'
+            '<p class="mapa-status" aria-live="polite"><span id="m-n"></span>'
+            '<span id="m-aprox" class="aprox" hidden>Com filtros combinados, valores aproximados '
+            f'(grupos com menos de {MIN_CUBO} alunos omitidos).</span></p>')
 
 
 # --------------------------------------------------------------------------
@@ -642,6 +783,17 @@ letter-spacing:-.02em;margin:14px 0 8px;font-variant-numeric:lining-nums}
 .graf figcaption p{margin:0 0 10px;font-size:.95rem;color:var(--suave)}
 .plot{min-width:0}
 .plot,.plot .js-plotly-plot,.plot .js-plotly-plot *{touch-action:pan-y;-webkit-tap-highlight-color:transparent}
+/* filtros do mapa */
+.filtros{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 16px;align-items:end;margin:4px 0 10px;
+padding:14px 0;border-top:1px solid var(--linha);border-bottom:1px solid var(--linha)}
+.campo{display:flex;flex-direction:column;gap:4px;min-width:0}
+.campo label{font:600 .78rem/1.2 var(--f-tit);color:var(--suave)}
+.campo select,#f-limpar{font:500 .92rem/1.2 var(--f-tit);color:var(--tinta);background:var(--papel);
+border:1px solid var(--linha-f);border-radius:4px;padding:8px 9px;min-width:0;width:100%}
+#f-limpar{border-color:var(--tinta);cursor:pointer}
+#f-limpar:hover{background:var(--linha)}
+.mapa-status{font:500 .9rem/1.4 var(--f-tit);color:var(--suave);margin:0 0 6px}
+.mapa-status .aprox{display:block;font-weight:400;font-style:italic}
 .par{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px}
 .par .graf{margin-bottom:20px}
 
@@ -677,7 +829,8 @@ overflow:hidden;clip:rect(0 0 0 0)}.menu a.it{padding:6px 5px}
 .secao{padding-top:40px}.bola-g{width:2rem;height:2rem;font-size:.9rem}
 .kpis tr{display:grid;grid-template-columns:1fr auto;border-top:1px solid var(--linha);padding:10px 0}
 .kpis th,.kpis td{border:0;padding:0}.kpis th{width:auto}.kpi-v{text-align:right;padding-left:12px}
-.kpi-o{grid-column:1/-1;padding-top:2px}.eixo-n{display:none}.eixo summary::after{margin-left:auto}}
+.kpi-o{grid-column:1/-1;padding-top:2px}.eixo-n{display:none}.eixo summary::after{margin-left:auto}
+.filtros{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px}#f-limpar{grid-column:1/-1;width:100%}}
 """
 
 JS = """
@@ -733,6 +886,52 @@ if('IntersectionObserver' in window){
 })();
 """
 
+# Mapa: recalcula médias por UF no navegador a partir das tabelas agregadas (#dados-mapa).
+JS_MAPA = """
+(function(){
+var fonte=document.getElementById('dados-mapa'),gd=document.getElementById('mapa-ufs');if(!fonte||!gd)return;
+var D=JSON.parse(fonte.textContent),NU=D.ufs.length,P=1;D.radices.forEach(function(r){P*=r;});
+var escuro=matchMedia('(prefers-color-scheme: dark)');
+var sels=[].slice.call(document.querySelectorAll('.filtros select[data-filtro]')),selProva=document.getElementById('f-prova');
+// dígitos de cada célula do cubo (uf e categoria de cada filtro), calculados uma vez
+var dig=D.cubo.k.map(function(k){var uf=Math.floor(k/P),c=k%P,o=new Array(D.radices.length);
+  for(var j=D.radices.length-1;j>=0;j--){o[j]=c%D.radices[j];c=Math.floor(c/D.radices[j]);}return {uf:uf,d:o};});
+function fmt(v,c){return v.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:c==null?1:c});}
+function calcular(){
+  var p=+selProva.value,f=sels.map(function(s){return +s.value;}),at=[];
+  f.forEach(function(v,j){if(v>=0)at.push(j);});
+  var n,s,nac;
+  if(at.length<2){var T=at.length?D.um[D.filtros[at[0]]][f[at[0]]]:D.todos;n=T.n;s=T.s[p];nac={n:T.nac.n,s:T.nac.s[p]};}
+  else{n=new Array(NU).fill(0);s=new Array(NU).fill(0);nac={n:0,s:0};
+    for(var i=0;i<dig.length;i++){var c=dig[i],ok=true;
+      for(var a=0;a<at.length;a++){if(c.d[at[a]]!==f[at[a]]){ok=false;break;}}
+      if(!ok)continue;n[c.uf]+=D.cubo.n[i];s[c.uf]+=D.cubo.s[p][i];nac.n+=D.cubo.n[i];nac.s+=D.cubo.s[p][i];}}
+  var mN=nac.n?nac.s/10/nac.n:null,ok1={loc:[],z:[],cd:[]},cz={loc:[],z:[],cd:[]},val=[];
+  for(var u=0;u<NU;u++){
+    if(n[u]>=D.minN&&s[u]!=null){var m=s[u]/10/n[u];ok1.loc.push(D.cod[u]);ok1.z.push(m);
+      ok1.cd.push([D.ufs[u],Math.round(m*10)/10,n[u],Math.round((m-mN)*10)/10]);val.push([D.ufs[u],m]);}
+    // com 2+ filtros o n vem do cubo sem os grupos pequenos, então não é exato: mostra só "menos de 30 alunos"
+    else{cz.loc.push(D.cod[u]);cz.z.push(0);cz.cd.push([D.ufs[u],at.length<2?'n = '+fmt(n[u],0):'menos de '+D.minN+' alunos']);}}
+  Plotly.restyle(gd,{locations:[ok1.loc,cz.loc],z:[ok1.z,cz.z],customdata:[ok1.cd,cz.cd]},[0,1]);
+  Plotly.restyle(gd,{zmin:[D.faixa[p][0]],zmax:[D.faixa[p][1]]},[0]);
+  var tit=document.getElementById('m-titulo');
+  if(val.length>=2){val.sort(function(a,b){return b[1]-a[1];});
+    tit.textContent='Com estes filtros, '+val[0][0]+' tem a maior média ('+fmt(val[0][1])+') e '+val[val.length-1][0]+' a menor ('+fmt(val[val.length-1][1])+')';}
+  else tit.textContent='Com estes filtros, menos de duas UFs têm '+D.minN+' alunos ou mais';
+  document.getElementById('m-n').textContent=fmt(nac.n,0)+' alunos entram neste filtro'+(mN!=null?' (média nacional: '+fmt(mN)+' pts em '+D.provas[p]+')':'')+'.';
+  document.getElementById('m-aprox').hidden=at.length<2;}
+function escala(){var t=escuro.matches?'escuro':'claro',g=D.cinza[t];
+  Plotly.restyle(gd,{colorscale:[D.escala[t],[[0,g],[1,g]]]},[0,1]);}
+window.addEventListener('load',function(){
+  Plotly.restyle(gd,{geojson:[gd.data[0].geojson]},[1]);
+  calcular();escala();
+  selProva.addEventListener('change',calcular);sels.forEach(function(s){s.addEventListener('change',calcular);});
+  document.getElementById('f-limpar').addEventListener('click',function(){selProva.value='0';sels.forEach(function(s){s.value='-1';});calcular();});
+  (escuro.addEventListener?escuro.addEventListener('change',escala):escuro.addListener(escala));
+});
+})();
+"""
+
 PAGINA = """<!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -757,10 +956,11 @@ __SECOES__
 </div>
 </main>
 <footer><div class="w">
-<p>Fontes: INEP (Microdados do ENEM 2023); IBGE (Censo 2022 e PNAD Contínua 2023, via SIDRA); PNUD, Ipea e FJP (Radar IDHM, 2023). A UF é a da prova, não a de residência. Os resultados mostram associação, não causa.</p>
+<p>Fontes: INEP (Microdados do ENEM 2023); IBGE (Censo 2022 e PNAD Contínua 2023, via SIDRA); PNUD, Ipea e FJP (Radar IDHM, 2023); malha das UFs: IBGE, API de Malhas Territoriais (v3, qualidade mínima). A UF é a da prova, não a de residência. Os resultados mostram associação, não causa.</p>
 <p>__AMOSTRA__ Todos os números desta página são calculados pelo script <code>gerar_dashboard.py</code> com as mesmas funções dos notebooks.</p>
 <p>Código, notebooks e dados: <a href="__REPO__">github.com/feijitos/cienciadedados1</a>.</p>
 </div></footer>
+__DADOS_MAPA__
 <script>__JS__</script>
 </body></html>"""
 
@@ -819,7 +1019,19 @@ def main():
         for i, (a, _, rot, n, leg) in enumerate(destaques))
 
     # ---------- seção 1: território ----------
-    s1 = _figura(f"{reg_med.index[0]} e {reg_med.index[1]} lideram; {pior} tem a menor média, "
+    js_mapa, resumo_mapa = dados_mapa(dm, df_ibge, media_uf)
+    fig_mapa = grafico_mapa(js_mapa)
+    t0 = js_mapa["todos"]
+    med0 = {u: s / 10 / n for u, s, n in zip(js_mapa["ufs"], t0["s"][0], t0["n"])}
+    u_max, u_min = max(med0, key=med0.get), min(med0, key=med0.get)
+    s1 = (f'<figure class="graf"><figcaption><h3 id="m-titulo">Com estes filtros, {u_max} tem a maior média '
+          f'({_num(med0[u_max])}) e {u_min} a menor ({_num(med0[u_min])})</h3>'
+          f"<p>Nota média de cada UF com os filtros escolhidos. As cores têm escala fixa por prova, para comparar filtros; "
+          f"mais intenso = maior nota. Em cinza, UFs com menos de {MIN_N} alunos no filtro.</p></figcaption>"
+          f'{html_filtros()}<div class="plot">'
+          f'{fig_mapa.to_html(full_html=False, include_plotlyjs=False, config=CFG, div_id="mapa-ufs")}</div></figure>')
+    dados_json = json.dumps(js_mapa, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    s1 += _figura(f"{reg_med.index[0]} e {reg_med.index[1]} lideram; {pior} tem a menor média, "
                  f"{_num(media_uf.max() - media_uf.min())} pontos atrás de {melhor}",
                  "Nota média de cada UF, ligada à média nacional. Use o menu para ver cada prova; o título se refere à "
                  "nota final. Cor e símbolo indicam a região.", div(grafico_uf(df_pres, aux["tab_uf"])))
@@ -912,7 +1124,8 @@ def main():
 
     pagina = (PAGINA.replace("__PLOTLY__", plotly_js)
               .replace("__CSS__", CSS)
-              .replace("__JS__", JS.replace("__ESCURO__", json.dumps({k.lower(): v for k, v in ESCURO.items()})))
+              .replace("__JS__", JS.replace("__ESCURO__", json.dumps({k.lower(): v for k, v in ESCURO.items()})) + JS_MAPA)
+              .replace("__DADOS_MAPA__", f'<script type="application/json" id="dados-mapa">{dados_json}</script>')
               .replace("__DESCRICAO__", html.escape(manchete + "."))
               .replace("__MENU__", menu)
               .replace("__MANCHETE__", html.escape(manchete) + ".")
@@ -926,7 +1139,10 @@ def main():
     saida = Path(args.saida)
     saida.parent.mkdir(parents=True, exist_ok=True)
     saida.write_text(pagina, encoding="utf-8")
-    print(f"Dashboard gerado: {saida} ({saida.stat().st_size / 1e3:,.0f} KB)")
+    print(f"Dashboard gerado: {saida} ({saida.stat().st_size / 1e3:,.0f} KB; dados do mapa: {len(dados_json.encode()) / 1e3:,.0f} KB, "
+          f"malha: {MALHA.stat().st_size / 1e3:,.0f} KB)")
+    print(f"Mapa: cubo combinado com {resumo_mapa['celulas_cubo']} células (n >= {MIN_CUBO}); "
+          f"{resumo_mapa['celulas_omitidas']} células omitidas, {resumo_mapa['alunos_omitidos']} de {resumo_mapa['alunos']} alunos fora do cubo")
 
 
 if __name__ == "__main__":
