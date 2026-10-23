@@ -455,8 +455,8 @@ def html_filtros():
         campos.append(f'<div class="campo"><label for="f-{chave}">{rotulo}</label>'
                       f'<select id="f-{chave}" data-filtro="{chave}">{ops}</select></div>')
     campos.append('<div class="campo"><label for="f-escala">Escala de cores</label><select id="f-escala">'
-                  '<option value="ajustada">Ajustada ao filtro</option>'
-                  '<option value="fixa">Fixa (para comparar filtros)</option></select></div>')
+                  '<option value="ajustada">Ajustada</option>'
+                  '<option value="fixa">Fixa</option></select></div>')  # explicação completa no subtítulo (#m-escala)
     return (f'<div class="filtros" role="group" aria-label="Filtros do mapa">{"".join(campos)}'
             '<button type="button" id="f-limpar">Limpar filtros</button></div>'
             '<p class="mapa-status" aria-live="polite"><span id="m-n"></span>'
