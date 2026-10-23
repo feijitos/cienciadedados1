@@ -30,7 +30,10 @@ from src.kpis import calcular_kpis
 RAIZ = Path(__file__).resolve().parent
 REPO = "https://github.com/feijitos/cienciadedados1"
 FONTE = "Archivo, system-ui, sans-serif"
-CFG = {"responsive": True, "displaylogo": False, "displayModeBar": False}
+# Sem zoom por arrasto, roda do mouse ou duplo clique: no celular o dedo tem que rolar a página.
+# O hover/toque e os menus continuam funcionando.
+CFG = {"responsive": True, "displaylogo": False, "displayModeBar": False, "scrollZoom": False,
+       "doubleClick": False, "showTips": False}
 PROVAS = {"NOTA_FINAL": "Nota final", "NU_NOTA_CN": "Ciências da Natureza", "NU_NOTA_CH": "Ciências Humanas",
           "NU_NOTA_LC": "Linguagens", "NU_NOTA_MT": "Matemática", "NU_NOTA_REDACAO": "Redação"}
 
@@ -92,12 +95,12 @@ def _rgba(hex_, a):
 # --------------------------------------------------------------------------
 def _base(fig, altura=440, t=20):
     fig.update_layout(
-        template="none", height=altura, separators=",.", font=dict(family=FONTE, color=TINTA, size=13),
+        template="none", height=altura, separators=",.", font=dict(family=FONTE, color=TINTA, size=13), dragmode=False,
         margin=dict(l=50, r=16, t=t, b=50), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         legend=dict(orientation="h", x=0, xanchor="left", y=-0.14, yanchor="top", font=dict(color=TINTA_SECUNDARIA)),
         hoverlabel=dict(bgcolor=SUPERFICIE, bordercolor=EIXO, font=dict(family=FONTE, color=TINTA, size=13)))
     eixo = dict(gridcolor=CINZA_GRADE, linecolor=EIXO, zeroline=False, tickfont=dict(color=TINTA_SECUNDARIA),
-                title=dict(font=dict(color=TINTA_SECUNDARIA, size=12)), ticks="")
+                title=dict(font=dict(color=TINTA_SECUNDARIA, size=12)), ticks="", fixedrange=True)
     fig.update_xaxes(**eixo)
     fig.update_yaxes(**eixo)
     return fig
@@ -633,6 +636,7 @@ letter-spacing:-.02em;margin:14px 0 8px;font-variant-numeric:lining-nums}
 .graf h3{font-size:1.28rem;line-height:1.25;font-weight:650;margin:0 0 6px;text-wrap:balance}
 .graf figcaption p{margin:0 0 10px;font-size:.95rem;color:var(--suave)}
 .plot{min-width:0}
+.plot,.plot .js-plotly-plot,.plot .js-plotly-plot *{touch-action:pan-y}
 .par{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px}
 .par .graf{margin-bottom:20px}
 
