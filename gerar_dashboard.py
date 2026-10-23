@@ -161,8 +161,8 @@ def grafico_uf(df_pres, tab_uf):
         fig.add_scatter(x=xs[r], y=por_reg[r], customdata=cd[r], mode="markers", name=r,
                         marker=dict(color=CORES_REGIAO[r], symbol=SIMBOLOS_REGIAO[r], size=12,
                                     line=dict(color=SUPERFICIE, width=1.5)),
-                        hovertemplate="<b>%{y}</b><br>%{x:.1~f} pts<br>%{customdata:+.1~f} em relação à média nacional"
-                                      "<extra>" + r + "</extra>")
+                        hovertemplate="<b>%{y}</b><br>Região: " + r + "<br>%{x:.1~f} pts"
+                                      "<br>%{customdata:+.1~f} em relação à média nacional<extra></extra>")
     anots = [_anot(f"Média nacional: {_num(m)}", m, 1, yref="paper", yanchor="bottom", xanchor="left", xshift=4,
                    bgcolor=SUPERFICIE)]
     # fundo da cor do papel: nenhuma linha (grade ou haste) passa por cima do número; o JS troca a cor no tema escuro
@@ -241,9 +241,11 @@ def grafico_idh(tab_uf):
     """Bolhas (tamanho = população). O menu alterna entre IDHM e renda per capita no eixo x."""
     t = tab_uf.dropna(subset=["NOTA_MEDIA"]).copy()
     eixos = {"IDH_ESTADUAL": ("IDHM 2023", ".2f", ""), "RENDA_PER_CAPITA": ("Renda per capita 2023", ",.0f", "R$ ")}
-    D = 38  # diâmetro (px) da maior bolha
-    sizeref = 2 * t["POPULACAO"].max() / D ** 2
-    diam = np.maximum(6, D * np.sqrt(t["POPULACAO"] / t["POPULACAO"].max()))
+    # diâmetro (px) da maior bolha: 28 no computador, 20 no celular; área proporcional à população, mínimo 6 px
+    D, D_MOVEL, D_MIN = 28, 20, 6
+    pop_max = t["POPULACAO"].max()
+    sizeref, sizeref_movel = 2 * pop_max / D ** 2, 2 * pop_max / D_MOVEL ** 2
+    diam = np.maximum(D_MIN, D * np.sqrt(t["POPULACAO"] / pop_max))
     subs = [(r, t[t["REGIAO"] == r]) for r in REGIOES]
 
     def estado(col):
@@ -263,11 +265,13 @@ def grafico_idh(tab_uf):
             textfont=dict(size=11, color=TINTA_SECUNDARIA), name=r,
             customdata=[[float(a), float(b), int(c), u] for a, b, c, u in
                         zip(s["IDH_ESTADUAL"], s["RENDA_PER_CAPITA"], s["POPULACAO"], s.index)],
-            marker=dict(size=s["POPULACAO"], sizemode="area", sizeref=sizeref, sizemin=6, color=CORES_REGIAO[r],
-                        symbol=SIMBOLOS_REGIAO[r], opacity=0.88, line=dict(width=1.5, color=SUPERFICIE)),
-            hovertemplate=("<b>%{customdata[3]}</b><br>Nota média: %{y:.1~f} pts<br>IDHM: %{customdata[0]:.3f}"
-                           "<br>Renda per capita: R$ %{customdata[1]:,.0f}<br>População: %{customdata[2]:,.0f}"
-                           "<extra>" + r + "</extra>"))
+            # círculo para todas as regiões: aqui a região já está na cor e na etiqueta (símbolos só no gráfico por UF)
+            # sizemin age como raio no modo "area" do Plotly: D_MIN / 2 dá D_MIN px de diâmetro
+            marker=dict(size=s["POPULACAO"], sizemode="area", sizeref=sizeref, sizemin=D_MIN / 2, color=CORES_REGIAO[r],
+                        symbol="circle", opacity=0.75, line=dict(width=1, color=SUPERFICIE)),
+            hovertemplate=("<b>%{customdata[3]}</b><br>Região: " + r + "<br>Nota média: %{y:.1~f} pts"
+                           "<br>IDHM: %{customdata[0]:.3f}<br>Renda per capita: R$ %{customdata[1]:,.0f}"
+                           "<br>População: %{customdata[2]:,.0f}<extra></extra>"))
     fig.add_scatter(x=reta[0], y=reta[1], mode="lines", name="Tendência linear", showlegend=False,
                     line=dict(color=TINTA_SECUNDARIA, dash="dash", width=1.5), hoverinfo="skip")
 
@@ -291,8 +295,8 @@ def grafico_idh(tab_uf):
                            font=dict(color=TINTA, size=13))])
     n = len(REGIOES)
     return _responsivo(fig, movel={"margin.l": 44}, desktop={"margin.l": 50},
-                       dados_movel=[({"mode": "markers"}, list(range(n)))],
-                       dados_desktop=[({"mode": "markers+text"}, list(range(n)))])
+                       dados_movel=[({"mode": "markers", "marker.sizeref": sizeref_movel}, list(range(n)))],
+                       dados_desktop=[({"mode": "markers+text", "marker.sizeref": sizeref}, list(range(n)))])
 
 
 # --------------------------------------------------------------------------
@@ -307,7 +311,8 @@ def grafico_nota_renda(df_pres):
         fig.add_bar(x=ORDEM_RENDA, y=s["mean"].round(1), name=escola, marker=dict(color=CORES_ESCOLA[escola], line=dict(width=0)),
                     customdata=s["size"], text=[_num(v, 0) for v in s["mean"]], textposition="outside",
                     textfont=dict(color=TINTA_SECUNDARIA, size=12), cliponaxis=False,
-                    hovertemplate="<b>%{x}</b><br>Média: %{y:.1~f} pts<br>Alunos: %{customdata:,.0f}<extra>" + escola + "</extra>")
+                    hovertemplate="<b>%{x}</b><br>Escola " + escola.lower() + "<br>Média: %{y:.1~f} pts"
+                                  "<br>Alunos: %{customdata:,.0f}<extra></extra>")
     _base(fig, 400).update_layout(bargap=0.3, bargroupgap=0.08, legend=dict(y=-0.12),
                                   yaxis=dict(title=dict(text="Nota final média (pts)"), range=[0, float(g["mean"].max() * 1.12)]))
     return fig
@@ -346,7 +351,7 @@ def grafico_distribuicao(df_pres):
     for e, y in zip(["Pública", "Privada"], dens("NOTA_FINAL")):
         fig.add_scatter(x=centros, y=y, mode="lines", name=e, fill="tozeroy", customdata=faixas,
                         line=dict(color=CORES_ESCOLA[e], width=2), fillcolor=_rgba(CORES_ESCOLA[e], 0.16),
-                        hovertemplate="%{y:.2f}% dos alunos<extra>" + e + "</extra>")
+                        hovertemplate=e + ": %{y:.2f}% dos alunos<extra></extra>")
     botoes = [dict(label=rot, method="restyle", args=[{"y": dens(col)}]) for col, rot in PROVAS.items()]
     _base(fig, 420, t=46).update_layout(
         updatemenus=_menu(botoes), xaxis=dict(title=dict(text="Nota (pts), faixas de 25 pontos"), range=[200, 950]),
@@ -438,7 +443,7 @@ def grafico_recursos(g):
         s = g.xs(flag, level="TEM_INTERNET").reindex(range(5))
         fig.add_bar(x=COMP_ROTULOS, y=s["mean"].round(1), name=nome, marker=dict(color=cor, line=dict(width=0)),
                     customdata=s["size"].fillna(0), hovertemplate="<b>%{x} computador(es)</b><br>Média: %{y:.1~f} pts"
-                    "<br>Alunos: %{customdata:,.0f}<extra>" + nome + "</extra>")
+                    "<br>" + nome + "<br>Alunos: %{customdata:,.0f}<extra></extra>")
     _base(fig, 400).update_layout(bargap=0.3, bargroupgap=0.08, xaxis=dict(type="category", title=dict(text="Computadores em casa")),
                                   yaxis=dict(title=dict(text="Nota final média (pts)"), rangemode="tozero"),
                                   legend=dict(y=-0.2))
@@ -510,7 +515,7 @@ def grafico_modelos(res):
                     marker=dict(color=CORES_MODELOS.get(nome), line=dict(width=0)),
                     text=[_br(d["teste"][m], 2) for m in metricas], textposition="outside", cliponaxis=False,
                     textfont=dict(color=TINTA_SECUNDARIA, size=11),
-                    hovertemplate="<b>%{x}</b>: %{y:.3f}<extra>" + nome + "</extra>")
+                    hovertemplate="<b>" + nome + "</b><br>%{x}: %{y:.3f}<extra></extra>")
     _base(fig, 420).update_layout(
         bargap=0.25, bargroupgap=0.08, yaxis=dict(range=[0, 1.05], title=dict(text="valor no conjunto de teste"), tickformat=".1f"),
         margin=dict(l=50, r=96, t=10, b=50), legend=dict(y=-0.12),
@@ -636,7 +641,7 @@ letter-spacing:-.02em;margin:14px 0 8px;font-variant-numeric:lining-nums}
 .graf h3{font-size:1.28rem;line-height:1.25;font-weight:650;margin:0 0 6px;text-wrap:balance}
 .graf figcaption p{margin:0 0 10px;font-size:.95rem;color:var(--suave)}
 .plot{min-width:0}
-.plot,.plot .js-plotly-plot,.plot .js-plotly-plot *{touch-action:pan-y}
+.plot,.plot .js-plotly-plot,.plot .js-plotly-plot *{touch-action:pan-y;-webkit-tap-highlight-color:transparent}
 .par{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px}
 .par .graf{margin-bottom:20px}
 
