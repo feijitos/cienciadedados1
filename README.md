@@ -2,6 +2,8 @@
 
 Projeto Prático de Ciência de Dados (CEUB, 2026). O projeto cruza os **microdados do ENEM 2023 (INEP)** com **indicadores estaduais do IBGE e do PNUD** para medir quanto da nota no ENEM se associa à origem socioeconômica do aluno e ao contexto do estado. A análise percorre o ciclo completo de ciência de dados: coleta, limpeza, estatística descritiva, 20 KPIs, visualização, feature engineering, modelagem preditiva e avaliação.
 
+Autores: Marcos Feijó e Pedro Klein
+
 | Entrega | Notebook | Conteúdo |
 |---|---|---|
 | 1 (28/09/2026) | [`Entrega1_ENEM_IBGE.ipynb`](Entrega1_ENEM_IBGE.ipynb) | ETL, estatísticas descritivas, 20 KPIs e Gráficos 1–5 |

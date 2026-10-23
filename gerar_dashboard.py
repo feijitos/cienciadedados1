@@ -30,7 +30,7 @@ from src.kpis import calcular_kpis
 
 RAIZ = Path(__file__).resolve().parent
 REPO = "https://github.com/feijitos/cienciadedados1"
-FONTE = "Archivo, system-ui, sans-serif"
+FONTE = "Schibsted Grotesk, system-ui, sans-serif"
 # Sem zoom por arrasto, roda do mouse ou duplo clique: no celular o dedo tem que rolar a página.
 # O hover/toque e os menus continuam funcionando.
 CFG = {"responsive": True, "displaylogo": False, "displayModeBar": False, "scrollZoom": False,
@@ -102,7 +102,8 @@ def _base(fig, altura=440, t=20):
         hoverlabel=dict(bgcolor=SUPERFICIE, bordercolor=EIXO, font=dict(family=FONTE, color=TINTA, size=13)))
     eixo = dict(gridcolor=CINZA_GRADE, linecolor=EIXO, zeroline=False, tickfont=dict(color=TINTA_SECUNDARIA),
                 title=dict(font=dict(color=TINTA_SECUNDARIA, size=12)), ticks="", fixedrange=True)
-    fig.update_xaxes(**eixo)
+    # automargin no x: o título do eixo entra na margem de baixo (senão invade a faixa da marca d'água)
+    fig.update_xaxes(**eixo, automargin=True)
     fig.update_yaxes(**eixo)
     return fig
 
@@ -117,6 +118,26 @@ def _responsivo(fig, movel, desktop, dados_movel=None, dados_desktop=None):
     `dados_*` é uma lista de (alterações, índices dos traços)."""
     fig.update_layout(meta=dict(movel=dict(layout=movel, data=dados_movel or []),
                                 desktop=dict(layout=desktop, data=dados_desktop or [])))
+    return fig
+
+
+AUTORIA, AUTORIA_CURTA = "Elaborado por Marcos Feijó e Pedro Klein", "M. Feijó e P. Klein"
+
+
+def _assinatura(fig):
+    """Marca d'água discreta no canto inferior direito da figura (vai junto em prints).
+    Fica na margem de baixo, encostada na borda; no celular usa a versão curta do crédito."""
+    m = fig.layout.margin
+    b = 50 if m.b is None else m.b
+    r = 16 if m.r is None else m.r
+    fig.add_annotation(text=AUTORIA, xref="paper", yref="paper", x=1, y=0, xanchor="right", yanchor="bottom",
+                       xshift=r - 2, yshift=-b + 1, showarrow=False, opacity=0.6,
+                       font=dict(size=10, color=TINTA_SECUNDARIA))
+    i = len(fig.layout.annotations) - 1
+    meta = fig.layout.meta or {"movel": {"layout": {}, "data": []}, "desktop": {"layout": {}, "data": []}}
+    meta["movel"]["layout"][f"annotations[{i}].text"] = AUTORIA_CURTA
+    meta["desktop"]["layout"][f"annotations[{i}].text"] = AUTORIA
+    fig.update_layout(meta=meta)
     return fig
 
 
@@ -190,7 +211,7 @@ def grafico_uf(df_pres, tab_uf):
         xaxis=dict(title=dict(text="Nota final (média, pts)"), range=faixa),
         yaxis=dict(type="category", categoryorder="array", categoryarray=ordem, autorange="reversed", showgrid=False,
                    tickfont=dict(color=TINTA, size=12)),
-        legend=dict(y=-0.07), margin=dict(l=40, r=16, t=56, b=60))
+        legend=dict(y=-0.1), margin=dict(l=40, r=16, t=56, b=60))
     # no celular o rótulo da média entra no gráfico, à esquerda da linha (o topo à esquerda da média fica livre,
     # porque a primeira linha é a melhor UF); assim não sai pela borda nem fica sob o menu
     return _responsivo(fig, movel={"annotations[0].xanchor": "right", "annotations[0].xshift": -4, "annotations[0].font.size": 10,
@@ -291,7 +312,7 @@ def grafico_idh(tab_uf):
     a = anot_r(reta, r_idh)
     _base(fig, 520, t=46).update_layout(
         updatemenus=_menu(botoes), xaxis=dict(title=dict(text=eixos["IDH_ESTADUAL"][0]), tickformat=".2f"),
-        yaxis_title="Nota final média da UF (pts)",
+        yaxis_title="Nota final média da UF (pts)", legend=dict(y=-0.19),
         annotations=[_anot(a["text"], a["x"], a["y"], xanchor="right", yanchor="bottom", yshift=8,
                            font=dict(color=TINTA, size=13))])
     n = len(REGIOES)
@@ -743,7 +764,7 @@ def html_kpis(df_kpis):
 CSS = """
 :root{--papel:#fcfcfb;--tinta:#0b0b0b;--suave:#52514e;--linha:#e1e0d9;--linha-f:#c3c2b7;--foco:#2a78d6;
 --c-azul:#2f62b0;--c-amarelo:#f2c12e;--c-branco:#ffffff;--c-rosa:#e48bb1;--c-cinza:#9a9d9f;--marca:#0b0b0b;
---f-tit:"Archivo",system-ui,sans-serif;--f-txt:"Source Serif 4",Georgia,serif;color-scheme:light}
+--f-tit:"Schibsted Grotesk",system-ui,sans-serif;--f-txt:"Schibsted Grotesk",system-ui,sans-serif;color-scheme:light}
 @media (prefers-color-scheme:dark){:root{--papel:#1a1a19;--tinta:#f0efec;--suave:#c3c2b7;--linha:#2c2c2a;
 --linha-f:#47463f;--foco:#86b6ef;--c-azul:#4f82cf;--c-amarelo:#e0b12a;--c-branco:#1a1a19;--c-rosa:#d47ba1;
 --c-cinza:#7d8083;--marca:#f0efec;color-scheme:dark}}
@@ -769,7 +790,7 @@ border:1.5px solid var(--tinta);font:600 .8rem/1 var(--f-tit);color:var(--tinta)
 /* menu fixo */
 .menu{position:sticky;top:0;z-index:10;background:var(--papel);border-bottom:1px solid var(--linha)}
 .menu .w{display:flex;align-items:center;gap:20px;height:56px}
-.marca{font-weight:700;font-stretch:85%;text-decoration:none;white-space:nowrap;font-size:1rem}
+.marca{font-weight:700;text-decoration:none;white-space:nowrap;font-size:1rem}
 .menu ol{display:flex;gap:4px;list-style:none;margin:0 0 0 auto;padding:0;overflow-x:auto;scrollbar-width:none}
 .menu ol::-webkit-scrollbar{display:none}
 .menu a.it{display:flex;align-items:center;gap:8px;padding:6px 10px;text-decoration:none;font-size:.9rem;
@@ -780,9 +801,10 @@ color:var(--suave);white-space:nowrap;border-radius:6px}
 
 /* abertura */
 .abertura{padding:64px 0 40px;border-bottom:1px solid var(--linha)}
-.abertura h1{font-size:clamp(2rem,1.1rem + 3.4vw,3.7rem);line-height:1.02;font-weight:800;font-stretch:78%;
+.abertura h1{font-size:clamp(2rem,1.1rem + 3.4vw,3.7rem);line-height:1.04;font-weight:800;
 letter-spacing:-.015em;margin:0 0 22px;max-width:21ch;text-wrap:balance}
 .abertura .dek{font-size:1.15rem;color:var(--suave);max-width:60ch;margin:0}
+.abertura .autoria{font:500 .88rem/1.4 var(--f-tit);color:var(--suave);margin:14px 0 0}
 .gabarito{list-style:none;margin:44px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
 border-top:2px solid var(--tinta)}
 .gabarito li{padding:18px 20px 4px 0;min-width:0}
@@ -791,7 +813,7 @@ border-top:2px solid var(--tinta)}
 .gabarito a:hover .leg{text-decoration:underline}
 .gabarito .topo{display:flex;align-items:center;gap:10px;color:var(--suave);font:500 .85rem/1.2 var(--f-tit)}
 .gabarito .bola{width:1.35em;height:1.35em;font-size:.72rem;background:var(--marca);border-color:var(--marca);color:var(--papel)}
-.num{display:block;font-size:clamp(2.1rem,1.4rem + 2vw,3rem);font-weight:750;font-stretch:88%;line-height:1;
+.num{display:block;font-size:clamp(2.1rem,1.4rem + 2vw,3rem);font-weight:800;line-height:1;
 letter-spacing:-.02em;margin:14px 0 8px;font-variant-numeric:lining-nums}
 .num small{font-size:.42em;font-weight:600;letter-spacing:0;margin-left:4px;color:var(--suave)}
 .leg{display:block;font-size:.95rem;line-height:1.45;color:var(--suave)}
@@ -799,11 +821,11 @@ letter-spacing:-.02em;margin:14px 0 8px;font-variant-numeric:lining-nums}
 /* seções e gráficos */
 .secao{padding:56px 0 8px;border-bottom:1px solid var(--linha);scroll-margin-top:56px}
 .sec-cab{display:flex;gap:16px;align-items:flex-start;margin-bottom:12px}
-.sec-cab h2{font-size:clamp(1.6rem,1.2rem + 1.4vw,2.2rem);line-height:1.1;font-weight:750;font-stretch:85%;margin:2px 0 8px}
+.sec-cab h2{font-size:clamp(1.6rem,1.2rem + 1.4vw,2.2rem);line-height:1.1;font-weight:700;margin:2px 0 8px}
 .sec-cab p{margin:0;max-width:64ch;color:var(--suave)}
 .graf{margin:36px 0 28px;min-width:0}
 .graf figcaption{max-width:70ch}
-.graf h3{font-size:1.28rem;line-height:1.25;font-weight:650;margin:0 0 6px;text-wrap:balance}
+.graf h3{font-size:1.28rem;line-height:1.25;font-weight:600;margin:0 0 6px;text-wrap:balance}
 .graf figcaption p{margin:0 0 10px;font-size:.95rem;color:var(--suave)}
 .plot{min-width:0}
 .plot,.plot .js-plotly-plot,.plot .js-plotly-plot *{touch-action:pan-y;-webkit-tap-highlight-color:transparent}
@@ -895,10 +917,25 @@ function tamanho(gd){
   var m=gd.layout&&gd.layout.meta,k=movel.matches?'movel':'desktop'; if(!m||!m[k]||gd._tam===k)return; gd._tam=k;
   (m[k].data||[]).forEach(function(par){Plotly.restyle(gd,par[0],par[1]);});
   if(m[k].layout&&Object.keys(m[k].layout).length)Plotly.relayout(gd,m[k].layout);}
-function tudo(){graficos().forEach(function(gd){tamanho(gd);tema(gd);});}
+// Marca d'água: abre uma faixa de 16 px abaixo de tudo o que o Plotly já pôs na margem de baixo (legenda, eixos,
+// barra de cores) e encosta o crédito no canto inferior direito dessa faixa. Refeito ao mudar de tamanho de tela.
+function assinar(gd){
+  var k=movel.matches?'movel':'desktop';if(gd._assin===k)return;gd._assin=k;
+  var an=(gd.layout.annotations||[]),i=-1;an.forEach(function(a,j){if(/Feij/.test(a.text||''))i=j;});if(i<0)return;
+  if(gd._mb0==null)gd._mb0=gd.layout.margin&&gd.layout.margin.b!=null?gd.layout.margin.b:50;
+  Plotly.relayout(gd,{'margin.b':gd._mb0}).then(function(){
+    // mede na tela até onde desce o elemento mais baixo abaixo da área de dados (o Plotly às vezes não conta o título do eixo)
+    var s=gd._fullLayout._size,fig=gd.querySelector('.main-svg').getBoundingClientRect(),base=fig.top+s.t+s.h,ocupado=s.b;
+    [].forEach.call(gd.querySelectorAll('.g-xtitle text, .xtick text, .legend, .colorbar, .annotation'),function(e){
+      if(/Feij/.test(e.textContent||''))return;var r=e.getBoundingClientRect();if(r.height)ocupado=Math.max(ocupado,Math.ceil(r.bottom-base)+4);});
+    var u={},b=ocupado+16;
+    u['margin.b']=b;u['annotations['+i+'].yshift']=-b+1;u['annotations['+i+'].xshift']=s.r-4;return Plotly.relayout(gd,u);});}
+function tudo(){graficos().forEach(function(gd){tamanho(gd);tema(gd);assinar(gd);});}
 window.addEventListener('load',function(){
   tudo();
-  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){graficos().forEach(function(gd){Plotly.Plots.resize(gd);});});
+  // com a fonte carregada, legendas e títulos mudam de tamanho: redesenha e só então reposiciona a marca
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){graficos().forEach(function(gd){
+    Promise.resolve(Plotly.Plots.resize(gd)).then(function(){gd._assin=null;assinar(gd);});});});
 });
 (escuro.addEventListener?escuro.addEventListener('change',tudo):escuro.addListener(tudo));
 (movel.addEventListener?movel.addEventListener('change',tudo):movel.addListener(tudo));
@@ -975,7 +1012,7 @@ PAGINA = """<!doctype html>
 <meta name="description" content="__DESCRICAO__">
 <meta name="color-scheme" content="light dark">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 __PLOTLY__
 <style>__CSS__</style></head><body>
 <nav class="menu" aria-label="Seções"><div class="w">
@@ -985,6 +1022,7 @@ __PLOTLY__
 <section id="inicio" class="abertura"><div class="w">
 <h1>__MANCHETE__</h1>
 <p class="dek">__DEK__</p>
+<p class="autoria">__AUTORIA__</p>
 <ol class="gabarito">__DESTAQUES__</ol>
 </div></section>
 <div class="w">
@@ -994,7 +1032,7 @@ __SECOES__
 <footer><div class="w">
 <p>Fontes: INEP (Microdados do ENEM 2023); IBGE (Censo 2022 e PNAD Contínua 2023, via SIDRA); PNUD, Ipea e FJP (Radar IDHM, 2023); malha das UFs: IBGE, API de Malhas Territoriais (v3, qualidade mínima). A UF é a da prova, não a de residência. Os resultados mostram associação, não causa.</p>
 <p>__AMOSTRA__ Todos os números desta página são calculados pelo script <code>gerar_dashboard.py</code> com as mesmas funções dos notebooks.</p>
-<p>Código, notebooks e dados: <a href="__REPO__">github.com/feijitos/cienciadedados1</a>.</p>
+<p>__AUTORIA__. Código, notebooks e dados: <a href="__REPO__">github.com/feijitos/cienciadedados1</a>.</p>
 </div></footer>
 __DADOS_MAPA__
 <script>__JS__</script>
@@ -1015,7 +1053,7 @@ def main():
     kpi = df_kpis.set_index("#")["Valor"]
 
     def div(fig):
-        return fig.to_html(full_html=False, include_plotlyjs=False, config=CFG)
+        return _assinatura(fig).to_html(full_html=False, include_plotlyjs=False, config=CFG)
 
     plotly_js = (f"<script>{get_plotlyjs()}</script>" if args.offline else
                  f'<script src="https://cdn.plot.ly/plotly-{get_plotlyjs_version()}.min.js" charset="utf-8"></script>')
@@ -1067,7 +1105,7 @@ def main():
           f"<p>Nota média de cada UF com os filtros escolhidos; mais intenso = maior nota. "
           f'<span id="m-escala">{texto_escala0}</span> Em cinza, UFs com menos de {MIN_N} alunos no filtro.</p></figcaption>'
           f'{html_filtros()}<div class="plot">'
-          f'{fig_mapa.to_html(full_html=False, include_plotlyjs=False, config=CFG, div_id="mapa-ufs")}</div></figure>')
+          f'{_assinatura(fig_mapa).to_html(full_html=False, include_plotlyjs=False, config=CFG, div_id="mapa-ufs")}</div></figure>')
     dados_json = json.dumps(js_mapa, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     s1 += _figura(f"{reg_med.index[0]} e {reg_med.index[1]} lideram; {pior} tem a menor média, "
                  f"{_num(media_uf.max() - media_uf.min())} pontos atrás de {melhor}",
@@ -1172,7 +1210,8 @@ def main():
               .replace("__SECOES__", corpo)
               .replace("__AMOSTRA__", f"Amostra de {_br(len(df), 0)} concluintes do ensino médio, "
                                       f"{_br(len(df_pres), 0)} com as cinco provas.")
-              .replace("__REPO__", REPO))
+              .replace("__REPO__", REPO)
+              .replace("__AUTORIA__", html.escape(AUTORIA)))
 
     saida = Path(args.saida)
     saida.parent.mkdir(parents=True, exist_ok=True)
