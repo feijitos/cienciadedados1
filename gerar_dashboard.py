@@ -146,9 +146,9 @@ def grafico_uf(df_pres, tab_uf):
             v = float(med.loc[u, col])
             dir_ = v >= m  # rótulo do lado oposto à haste
             extremos.append(dict(x=v, y=u, text=f"<b>{u}</b> {_num(v)}", xanchor="left" if dir_ else "right",
-                                 xshift=12 if dir_ else -12))
+                                 xshift=9 if dir_ else -9))
         lo, hi = float(med[col].min()), float(med[col].max())
-        faixa = [lo - (hi - lo) * 0.16, hi + (hi - lo) * 0.12]  # folga para os rótulos dos extremos
+        faixa = [lo - (hi - lo) * 0.34, hi + (hi - lo) * 0.3]  # folga para os rótulos dos extremos (também no celular)
         return ordem, m, (hx, hy), por_reg, xs, cd, extremos, faixa
 
     ordem, m, (hx, hy), por_reg, xs, cd, ext, faixa = estado("NOTA_FINAL")
@@ -160,8 +160,11 @@ def grafico_uf(df_pres, tab_uf):
                                     line=dict(color=SUPERFICIE, width=1.5)),
                         hovertemplate="<b>%{y}</b><br>%{x:.1~f} pts<br>%{customdata:+.1~f} em relação à média nacional"
                                       "<extra>" + r + "</extra>")
-    anots = [_anot(f"Média nacional: {_num(m)}", m, 1, yref="paper", yanchor="bottom", xanchor="left", xshift=4)]
-    anots += [_anot(e.pop("text"), e.pop("x"), e.pop("y"), font=dict(color=TINTA, size=12), **e) for e in ext]
+    anots = [_anot(f"Média nacional: {_num(m)}", m, 1, yref="paper", yanchor="bottom", xanchor="left", xshift=4,
+                   bgcolor=SUPERFICIE)]
+    # fundo da cor do papel: nenhuma linha (grade ou haste) passa por cima do número; o JS troca a cor no tema escuro
+    anots += [_anot(e.pop("text"), e.pop("x"), e.pop("y"), font=dict(color=TINTA, size=12), bgcolor=SUPERFICIE,
+                    borderpad=2, **e) for e in ext]
 
     botoes = []
     for col, rotulo in PROVAS.items():
@@ -184,9 +187,14 @@ def grafico_uf(df_pres, tab_uf):
         yaxis=dict(type="category", categoryorder="array", categoryarray=ordem, autorange="reversed", showgrid=False,
                    tickfont=dict(color=TINTA, size=12)),
         legend=dict(y=-0.07), margin=dict(l=40, r=16, t=56, b=60))
-    # em tela estreita os rótulos dos extremos não cabem; o valor continua no hover
-    return _responsivo(fig, movel={"annotations[1].visible": False, "annotations[2].visible": False},
-                       desktop={"annotations[1].visible": True, "annotations[2].visible": True})
+    # no celular o rótulo da média entra no gráfico, à esquerda da linha (o topo à esquerda da média fica livre,
+    # porque a primeira linha é a melhor UF); assim não sai pela borda nem fica sob o menu
+    return _responsivo(fig, movel={"annotations[0].xanchor": "right", "annotations[0].xshift": -4, "annotations[0].font.size": 10,
+                                   "annotations[0].yanchor": "top",
+                                   "annotations[1].font.size": 10, "annotations[2].font.size": 10},
+                       desktop={"annotations[0].xanchor": "left", "annotations[0].xshift": 4, "annotations[0].font.size": 12,
+                                "annotations[0].yanchor": "bottom",
+                                "annotations[1].font.size": 12, "annotations[2].font.size": 12})
 
 
 def _colide(caixa, cx, cy, r):
