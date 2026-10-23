@@ -7,6 +7,21 @@ Projeto Prático de Ciência de Dados (CEUB, 2026). O projeto cruza os **microda
 | 1 (28/09/2026) | [`Entrega1_ENEM_IBGE.ipynb`](Entrega1_ENEM_IBGE.ipynb) | ETL, estatísticas descritivas, 20 KPIs e Gráficos 1–5 |
 | 2 (23/11/2026) | [`Entrega2_ENEM_IBGE.ipynb`](Entrega2_ENEM_IBGE.ipynb) | EDA complementar, feature engineering, Regressão Linear, Regressão Logística, Árvore de Decisão, KNN, avaliação e Gráficos 6–14 |
 
+## Dashboard interativo
+
+**[feijitos.github.io/cienciadedados1](https://feijitos.github.io/cienciadedados1/)**
+
+Página estática publicada pelo GitHub Pages, sem servidor. Reúne os 20 KPIs e 8 gráficos interativos (Plotly), com valores ao passar o mouse e menus para trocar a prova ou o eixo:
+
+- nota média por UF, colorida por região;
+- IDHM e renda per capita × nota média das UFs (bolhas proporcionais à população);
+- nota por faixa de renda e tipo de escola, e abstenção por faixa de renda;
+- distribuição das notas na rede pública e na privada;
+- nota por escolaridade da mãe e faixa de renda, e por acesso a computador e internet;
+- coeficientes da Regressão Linear e comparação dos três classificadores.
+
+A página é gerada por [`gerar_dashboard.py`](gerar_dashboard.py), que reaproveita as funções de `src/` e lê [`resultados/metricas_entrega2.json`](resultados/metricas_entrega2.json). O resultado fica em [`docs/index.html`](docs/index.html).
+
 ## Principais resultados
 
 Amostra de **56.048** concluintes do ensino médio (4% de cada UF), dos quais **42.032** fizeram as cinco provas.
@@ -58,6 +73,15 @@ Para conferir requisitos, coerência dos números e higiene do repositório depo
 python ferramentas/verificar_entrega.py
 ```
 
+Para atualizar o dashboard depois de mudar dados, KPIs ou modelos:
+
+```bash
+python gerar_dashboard.py             # grava docs/index.html
+python gerar_dashboard.py --offline   # embute o Plotly.js na página (não depende de CDN)
+```
+
+Em seguida, faça commit e push do `docs/index.html`. O GitHub Pages publica a pasta `docs/` da branch `main` (*Settings → Pages*).
+
 Para rodar sem os dados reais, mude `USAR_DADOS_REAIS = False` na primeira célula de código. Os notebooks passam a usar a simulação reprodutível da Entrega 1. A Entrega 2 continua funcionando nesse modo, mas com menos variáveis.
 
 ## Como baixar e reprocessar os dados
@@ -81,6 +105,7 @@ O script:
 ├── Entrega1_ENEM_IBGE.ipynb      # Entrega 1: ETL, descritivas, 20 KPIs, Gráficos 1–5
 ├── Entrega2_ENEM_IBGE.ipynb      # Entrega 2: EDA, features, modelos, avaliação, Gráficos 6–14
 ├── baixar_dados.py               # coleta: INEP (download + amostra) e IBGE (API SIDRA)
+├── gerar_dashboard.py            # gera o dashboard interativo (docs/index.html)
 ├── requirements.txt
 ├── ferramentas/
 │   └── verificar_entrega.py      # checagem automática de requisitos, números e repositório
@@ -98,7 +123,8 @@ O script:
 │   └── brutos/                   # zip do INEP (ignorado pelo Git)
 ├── resultados/
 │   └── metricas_entrega2.json    # números gerados pela Entrega 2
-└── docs/
+└── docs/                         # publicada pelo GitHub Pages
+    ├── index.html                # dashboard interativo (gerado, não editar à mão)
     ├── DECISOES.md               # decisões técnicas e incoerências encontradas
     ├── roteiro_relatorio.md      # estrutura do relatório em PDF
     ├── slides_ml.md              # 3 slides de Machine Learning (apresentação de 10 min)
@@ -113,7 +139,7 @@ O script:
 | 2 | Limpeza e Pré-processamento | Seção 3 (ETL, nulos, integração) e Seção 7 (imputação, `StandardScaler`, One-Hot) da Entrega 2 |
 | 3 | Estatísticas Descritivas | Seção 4 das duas entregas (média, mediana, moda, desvio, IQR) |
 | 4 | KPIs | 20 KPIs em 4 eixos (`src/kpis.py`) |
-| 5 | Visualização e Storytelling | 14 gráficos + Seção 11 (insights) da Entrega 2 |
+| 5 | Visualização e Storytelling | 14 gráficos + Seção 11 (insights) da Entrega 2 + dashboard interativo (`gerar_dashboard.py`) |
 | 6 | Feature Engineering | Seção 6 da Entrega 2 (`src/features.py`) |
 | 7 | Modelagem Preditiva | Regressão Linear e Logística, Árvore de Decisão e KNN (Seções 8–10) |
 

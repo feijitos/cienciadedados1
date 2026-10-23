@@ -241,6 +241,8 @@ for f in rastreados:
     texto = p.read_text(encoding="utf-8", errors="ignore")
     if p.suffix == ".ipynb":  # ignora imagens embutidas em base64
         texto = re.sub(r'"image/png": "[^"]*"', "", texto)
+    if p.suffix == ".html":  # ignora os arrays do Plotly em base64 ("bdata"), que geram falsos positivos
+        texto = re.sub(r'"bdata":"[^"]*"', "", texto)
     if segredo.search(texto):
         problemas_seg.append(f)
     if caminho_abs.search(texto):
