@@ -799,13 +799,24 @@ color:var(--suave);white-space:nowrap;border-radius:6px}
 .menu a.it[aria-current=true] .bola{box-shadow:0 0 0 2px var(--papel),0 0 0 3.5px var(--tinta)}
 .menu .bola{font-size:.72rem}
 
-/* abertura */
-.abertura{padding:64px 0 40px;border-bottom:1px solid var(--linha)}
-.abertura h1{font-size:clamp(2rem,1.1rem + 3.4vw,3.7rem);line-height:1.04;font-weight:800;
-letter-spacing:-.015em;margin:0 0 22px;max-width:21ch;text-wrap:balance}
-.abertura .dek{font-size:1.15rem;color:var(--suave);max-width:60ch;margin:0}
-.abertura .autoria{font:500 .88rem/1.4 var(--f-tit);color:var(--suave);margin:14px 0 0}
-.gabarito{list-style:none;margin:44px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+/* primeira tela: só a manchete, na altura da tela menos o menu (56 px + 1 px de borda) */
+.capa{display:flex;flex-direction:column;min-height:calc(100vh - 57px);min-height:calc(100svh - 57px)}
+.capa-txt{flex:1;display:flex;align-items:center;width:100%;padding-top:56px;padding-bottom:40px}
+/* tamanho pela largura, limitado pela altura (9svh) para caber em notebooks de tela baixa */
+.capa h1{font-size:clamp(2.25rem,1.2rem + 5.4vw,5rem);font-size:min(clamp(2.25rem,1.2rem + 5.4vw,5rem),9svh);
+line-height:1.06;font-weight:800;letter-spacing:-.02em;margin:0;max-width:18ch;text-wrap:balance;
+font-variant-numeric:lining-nums proportional-nums}
+.capa-pe{width:100%;padding-bottom:24px}
+.rolar{display:inline-flex;align-items:center;gap:8px;padding:8px 0;font:500 .9rem/1.2 var(--f-tit);color:var(--suave);
+text-decoration:none}
+.rolar:hover{color:var(--tinta)}
+@media (prefers-reduced-motion:no-preference){.rolar svg{animation:descer 1.6s ease-in-out .8s 3}}
+@keyframes descer{50%{transform:translateY(4px)}}
+
+/* abertura: contexto e números em destaque, logo depois da primeira tela */
+.abertura{padding:56px 0 40px;border-top:1px solid var(--linha);border-bottom:1px solid var(--linha);scroll-margin-top:56px}
+.abertura .dek{font-size:1.2rem;max-width:60ch;margin:0}
+.gabarito{list-style:none;margin:40px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
 border-top:2px solid var(--tinta)}
 .gabarito li{padding:18px 20px 4px 0;min-width:0}
 .gabarito li+li{padding-left:20px;border-left:1px solid var(--linha)}
@@ -814,7 +825,7 @@ border-top:2px solid var(--tinta)}
 .gabarito .topo{display:flex;align-items:center;gap:10px;color:var(--suave);font:500 .85rem/1.2 var(--f-tit)}
 .gabarito .bola{width:1.35em;height:1.35em;font-size:.72rem;background:var(--marca);border-color:var(--marca);color:var(--papel)}
 .num{display:block;font-size:clamp(2.1rem,1.4rem + 2vw,3rem);font-weight:800;line-height:1;
-letter-spacing:-.02em;margin:14px 0 8px;font-variant-numeric:lining-nums}
+letter-spacing:-.02em;margin:14px 0 8px;font-variant-numeric:lining-nums proportional-nums}
 .num small{font-size:.42em;font-weight:600;letter-spacing:0;margin-left:4px;color:var(--suave)}
 .leg{display:block;font-size:.95rem;line-height:1.45;color:var(--suave)}
 
@@ -858,20 +869,25 @@ border-bottom:2px solid var(--suave);transform:rotate(45deg) translateY(-3px)}
 .kpis th,.kpis td{text-align:left;vertical-align:baseline;padding:11px 12px 11px 0;border-top:1px solid var(--linha)}
 .kpis th{font-weight:400;width:46%}
 .kpi-i{display:inline-block;min-width:2.2em;color:var(--suave);font:500 .8rem var(--f-tit)}
-.kpi-v{font:700 1.2rem/1.2 var(--f-tit);white-space:nowrap;font-variant-numeric:tabular-nums}
+.kpi-v{font:700 1.2rem/1.2 var(--f-tit);white-space:nowrap;font-variant-numeric:proportional-nums}
 .kpi-v small{font-size:.75rem;font-weight:500;color:var(--suave);margin-left:2px}
 .kpi-o{color:var(--suave);font-size:.88rem}
 
 footer{padding:40px 0 56px;color:var(--suave);font-size:.92rem}
 footer p{max-width:72ch;margin:0 0 10px}
 
+/* menu: com os rótulos, os itens precisam de ~640 px (~855 px com a marca); entre 881 e 1000 px o espaçamento
+   aperta, e até 880 px ficam só as bolinhas numeradas (o rótulo continua para leitores de tela) */
+@media (max-width:1000px){.menu .w{gap:16px}.menu ol{gap:0}.menu a.it{padding:6px 7px;gap:6px}}
+@media (max-width:880px){.menu .rot{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.menu a.it{padding:6px 8px}}
 @media (max-width:860px){.gabarito{grid-template-columns:repeat(2,minmax(0,1fr))}
 .gabarito li:nth-child(3){padding-left:0;border-left:0}
 .gabarito li:nth-child(n+3){border-top:1px solid var(--linha)}
 .par{grid-template-columns:minmax(0,1fr);gap:0}}
-@media (max-width:640px){.w{padding:0 16px}.menu .w{gap:10px}.menu .rot{position:absolute;width:1px;height:1px;
-overflow:hidden;clip:rect(0 0 0 0)}.menu a.it{padding:6px 5px}
-.abertura{padding:40px 0 28px}.gabarito li,.gabarito li+li{padding:16px 12px 4px 0;border-left:0}
+@media (max-width:640px){.w{padding:0 16px}.menu .w{gap:10px}.menu a.it{padding:6px 5px}
+.capa-txt{padding-top:32px;padding-bottom:24px}.capa-pe{padding-bottom:16px}
+.abertura{padding:40px 0 28px}.abertura .dek{font-size:1.1rem}.gabarito li,.gabarito li+li{padding:16px 12px 4px 0;border-left:0}
 .gabarito li:nth-child(even){padding-left:12px;border-left:1px solid var(--linha)}
 .secao{padding-top:40px}.bola-g{width:2rem;height:2rem;font-size:.9rem}
 .kpis tr{display:grid;grid-template-columns:1fr auto;border-top:1px solid var(--linha);padding:10px 0}
@@ -1019,10 +1035,12 @@ __PLOTLY__
 <a class="marca" href="#inicio">ENEM 2023 × IBGE</a>
 <ol>__MENU__</ol></div></nav>
 <main>
-<section id="inicio" class="abertura"><div class="w">
-<h1>__MANCHETE__</h1>
+<section id="inicio" class="capa" aria-labelledby="manchete">
+<div class="w capa-txt"><h1 id="manchete">__MANCHETE__</h1></div>
+<div class="w capa-pe"><a class="rolar" href="#abertura">Role para ver os dados<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 2v11M3 8.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+</section>
+<section id="abertura" class="abertura" aria-label="Resumo dos dados"><div class="w">
 <p class="dek">__DEK__</p>
-<p class="autoria">__AUTORIA__</p>
 <ol class="gabarito">__DESTAQUES__</ol>
 </div></section>
 <div class="w">
