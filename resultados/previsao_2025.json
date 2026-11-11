@@ -1,0 +1,997 @@
+{
+  "gerado_em": "2026-11-10T23:19:27",
+  "teste_cego": "Gravado e commitado antes de qualquer leitura das notas do RESULTADOS 2025. Do RESULTADOS foram lidas só SG_UF_PROVA, TP_DEPENDENCIA_ADM_ESC e TP_PRESENCA_*.",
+  "modelos": {
+    "regressao": "335291c19cbf0f3a301ffac80f8d41905cacf9e0dbe9be9c44edd5ba88776266",
+    "presenca": "8a38672df7e9b40c2ab49682b38bebde0d6273abb044f71ce31db3f327c57aa9"
+  },
+  "amostra_2025": {
+    "arquivo": "enem2025_participantes.parquet",
+    "sha256": "9fa806c46709294f62dece5cbe1a304deb0270480e6905698fe20a2b2c026d4c",
+    "linhas": 72425
+  },
+  "alvo": "NOTA_FINAL (média das 5 provas) dos presentes nas 5 provas, por UF",
+  "definicoes": {
+    "A": "repetição: média real de 2023 por UF (arquivo completo, universo verdadeiro)",
+    "B": "modelo congelado + perfil de 2023 (amostra de 2023, todos os inscritos), ponderado pela presença prevista",
+    "C": "modelo congelado + perfil de 2025 (amostra de 2025), ponderado pela presença prevista",
+    "C_mista_privada": "C com Q023 B/C como Privada (principal: Pública)",
+    "C_internet_em_branco": "C com TEM_INTERNET em branco, imputado pela mediana do treino (principal: Q020)",
+    "C_presenca_calibrada": "C com o logit da presença deslocado por UF (delta_logit) para bater a taxa real de presença de 2025 no universo aproximado; modelo congelado inalterado"
+  },
+  "sensibilidades_da_comparacao": {
+    "sem_ufs_acima_de_5pct": [
+      "AL",
+      "DF",
+      "GO",
+      "MA",
+      "MS",
+      "MT",
+      "PA",
+      "PI",
+      "PR",
+      "RJ",
+      "RR"
+    ],
+    "realidade_menos_vies_universo_estimado": "subtrair por UF vies_universo_estimado da média real de 2025"
+  },
+  "nacional": {
+    "A": 536.913951,
+    "B": 536.166581,
+    "C": 532.481314,
+    "C_mista_privada": 534.886259,
+    "C_internet_em_branco": 533.626278,
+    "C_presenca_calibrada": 532.167053,
+    "presenca_prevista_modelo": 0.745365,
+    "presenca_real_2025": 0.740923
+  },
+  "por_uf": {
+    "AC": {
+      "n_amostra_2025": 402,
+      "n_amostra_2023": 279,
+      "A": 510.1183,
+      "B": 513.111205,
+      "C": 506.319304,
+      "C_mista_privada": 508.266908,
+      "C_internet_em_branco": 509.908081,
+      "C_presenca_calibrada": 506.580335,
+      "presenca_prevista_modelo": 0.707515,
+      "presenca_real_2025": 0.698921,
+      "delta_logit": -0.045836,
+      "inscritos_universo_aproximado_2025": 9642,
+      "vies_universo_estimado": 0.919731,
+      "A_por_prova": {
+        "NU_NOTA_CN": 464.788557,
+        "NU_NOTA_CH": 497.954766,
+        "NU_NOTA_LC": 498.8561,
+        "NU_NOTA_MT": 489.624915,
+        "NU_NOTA_REDACAO": 599.367164
+      },
+      "sensibilidade_sem_esta_uf": false
+    },
+    "AL": {
+      "n_amostra_2025": 1461,
+      "n_amostra_2023": 1177,
+      "A": 512.049137,
+      "B": 514.280372,
+      "C": 514.915359,
+      "C_mista_privada": 516.692086,
+      "C_internet_em_branco": 516.531284,
+      "C_presenca_calibrada": 513.558184,
+      "presenca_prevista_modelo": 0.767939,
+      "presenca_real_2025": 0.813171,
+      "delta_logit": 0.298577,
+      "inscritos_universo_aproximado_2025": 32527,
+      "vies_universo_estimado": 3.005052,
+      "A_por_prova": {
+        "NU_NOTA_CN": 470.777141,
+        "NU_NOTA_CH": 496.302014,
+        "NU_NOTA_LC": 491.808162,
+        "NU_NOTA_MT": 500.168671,
+        "NU_NOTA_REDACAO": 601.189695
+      },
+      "sensibilidade_sem_esta_uf": true
+    },
+    "AM": {
+      "n_amostra_2025": 2000,
+      "n_amostra_2023": 1500,
+      "A": 491.423789,
+      "B": 502.458302,
+      "C": 496.25959,
+      "C_mista_privada": 497.781262,
+      "C_internet_em_branco": 499.698562,
+      "C_presenca_calibrada": 498.73149,
+      "presenca_prevista_modelo": 0.683473,
+      "presenca_real_2025": 0.58802,
+      "delta_logit": -0.460007,
+      "inscritos_universo_aproximado_2025": 48966,
+      "vies_universo_estimado": 0.424504,
+      "A_por_prova": {
+        "NU_NOTA_CN": 461.029902,
+        "NU_NOTA_CH": 486.330038,
+        "NU_NOTA_LC": 488.441172,
+        "NU_NOTA_MT": 478.332368,
+        "NU_NOTA_REDACAO": 542.985466
+      },
+      "sensibilidade_sem_esta_uf": false
+    },
+    "AP": {
+      "n_amostra_2025": 363,
+      "n_amostra_2023": 299,
+      "A": 508.685992,
+      "B": 504.401924,
+      "C": 505.105171,
+      "C_mista_privada": 507.632127,
+      "C_internet_em_branco": 507.058459,
+      "C_presenca_calibrada": 501.673749,
+      "presenca_prevista_modelo": 0.691283,
+      "presenca_real_2025": 0.794922,
+      "delta_logit": 0.607582,
+      "inscritos_universo_aproximado_2025": 8665,
+      "vies_universo_estimado": 1.545832,
+      "A_por_prova": {
+        "NU_NOTA_CN": 466.132401,
+        "NU_NOTA_CH": 496.332317,
+        "NU_NOTA_LC": 492.93417,
+        "NU_NOTA_MT": 479.525594,
+        "NU_NOTA_REDACAO": 608.505476
+      },
+      "sensibilidade_sem_esta_uf": false
+    },
+    "BA": {
+      "n_amostra_2025": 5545,
+      "n_amostra_2023": 3477,
+      "A": 526.990357,
+      "B": 524.066201,
+      "C": 513.466006,
+      "C_mista_privada": 516.069342,
+      "C_internet_em_branco": 515.24952,
+      "C_presenca_calibrada": 514.727018,
+      "presenca_prevista_modelo": 0.768703,
+      "presenca_real_2025": 0.725755,
+      "delta_logit": -0.25054,
+      "inscritos_universo_aproximado_2025": 133968,
+      "vies_universo_estimado": 1.491942,
+      "A_por_prova": {
+        "NU_NOTA_CN": 480.762764,
+        "NU_NOTA_CH": 510.399673,
+        "NU_NOTA_LC": 504.097937,
+        "NU_NOTA_MT": 509.810165,
+        "NU_NOTA_REDACAO": 629.881245
+      },
+      "sensibilidade_sem_esta_uf": false
+    },
+    "CE": {
+      "n_amostra_2025": 4740,
+      "n_amostra_2023": 4358,
+      "A": 505.33733,
+      "B": 505.175377,
+      "C": 507.220346,
+      "C_mista_privada": 508.867621,
+      "C_internet_em_branco": 509.362205,
+      "C_presenca_calibrada": 505.385321,
+      "presenca_prevista_modelo": 0.756509,
+      "presenca_real_2025": 0.838477,
+      "delta_logit": 0.547252,
+      "inscritos_universo_aproximado_2025": 114807,
+      "vies_universo_estimado": -0.37775,
+      "A_por_prova": {
+        "NU_NOTA_CN": 465.358649,
+        "NU_NOTA_CH": 489.64405,
+        "NU_NOTA_LC": 490.474184,
+        "NU_NOTA_MT": 499.120718,
+        "NU_NOTA_REDACAO": 582.089051
+      },
+      "sensibilidade_sem_esta_uf": false
+    },
+    "DF": {
+      "n_amostra_2025": 1082,
+      "n_amostra_2023": 1042,
+      "A": 554.258542,
+      "B": 546.504628,
+      "C": 552.051816,
+      "C_mista_privada": 555.08184,
+      "C_internet_em_branco": 552.484236,
+      "C_presenca_calibrada": 545.588535,
+      "presenca_prevista_modelo": 0.712789,
+      "presenca_real_2025": 0.835826,
+      "delta_logit": 0.822593,
+      "inscritos_universo_aproximado_2025": 25473,
+      "vies_universo_estimado": 2.770637,
+      "A_por_prova": {
+        "NU_NOTA_CN": 506.309147,
+        "NU_NOTA_CH": 536.589759,
+        "NU_NOTA_LC": 532.797199,
+        "NU_NOTA_MT": 548.779688,
+        "NU_NOTA_REDACAO": 646.816917
+      },
+      "sensibilidade_sem_esta_uf": true
+    },
+    "ES": {
+      "n_amostra_2025": 1352,
+      "n_amostra_2023": 1137,
+      "A": 554.514835,
+      "B": 546.974256,
+      "C": 546.203423,
+      "C_mista_privada": 547.812648,
+      "C_internet_em_branco": 546.804418,
+      "C_presenca_calibrada": 545.700417,
+      "presenca_prevista_modelo": 0.732,
+      "presenca_real_2025": 0.747339,
+      "delta_logit": 0.087805,
+      "inscritos_universo_aproximado_2025": 32791,
+      "vies_universo_estimado": 1.117818,
+      "A_por_prova": {
+        "NU_NOTA_CN": 502.522214,
+        "NU_NOTA_CH": 531.637676,
+        "NU_NOTA_LC": 524.29747,
+        "NU_NOTA_MT": 552.97744,
+        "NU_NOTA_REDACAO": 661.139373
+      },
+      "sensibilidade_sem_esta_uf": false
+    },
+    "GO": {
+      "n_amostra_2025": 2906,
+      "n_amostra_2023": 2787,
+      "A": 534.925151,
+      "B": 530.127628,
+      "C": 531.443058,
+      "C_mista_privada": 534.336442,
+      "C_internet_em_branco": 532.213231,
+      "C_presenca_calibrada": 531.694383,
+      "presenca_prevista_modelo": 0.693608,
+      "presenca_real_2025": 0.685452,
+      "delta_logit": -0.04216,
+      "inscritos_universo_aproximado_2025": 67427,
+      "vies_universo_estimado": 2.274963,
+      "A_por_prova": {
+        "NU_NOTA_CN": 488.641096,
+        "NU_NOTA_CH": 514.603497,
+        "NU_NOTA_LC": 510.749792,
+        "NU_NOTA_MT": 524.823814,
+        "NU_NOTA_REDACAO": 635.807559
+      },
+      "sensibilidade_sem_esta_uf": true
+    },
+    "MA": {
+      "n_amostra_2025": 2792,
+      "n_amostra_2023": 2050,
+      "A": 497.35169,
+      "B": 512.502112,
+      "C": 508.797698,
+      "C_mista_privada": 510.713449,
+      "C_internet_em_branco": 511.676508,
+      "C_presenca_calibrada": 509.320387,
+      "presenca_prevista_modelo": 0.771064,
+      "presenca_real_2025": 0.74731,
+      "delta_logit": -0.139925,
+      "inscritos_universo_aproximado_2025": 65792,
+      "vies_universo_estimado": 1.29128,
+      "A_por_prova": {
+        "NU_NOTA_CN": 457.868436,
+        "NU_NOTA_CH": 484.082695,
+        "NU_NOTA_LC": 480.164891,
+        "NU_NOTA_MT": 475.580244,
+        "NU_NOTA_REDACAO": 589.062181
+      },
+      "sensibilidade_sem_esta_uf": true
+    },
+    "MG": {
+      "n_amostra_2025": 7000,
+      "n_amostra_2023": 4379,
+      "A": 562.554225,
+      "B": 551.695022,
+      "C": 541.829593,
+      "C_mista_privada": 543.778661,
+      "C_internet_em_branco": 542.558251,
+      "C_presenca_calibrada": 542.420733,
+      "presenca_prevista_modelo": 0.728829,
+      "presenca_real_2025": 0.708561,
+      "delta_logit": -0.109338,
+      "inscritos_universo_aproximado_2025": 170828,
+      "vies_universo_estimado": 1.14732,
+      "A_por_prova": {
+        "NU_NOTA_CN": 508.522015,
+        "NU_NOTA_CH": 538.465106,
+        "NU_NOTA_LC": 529.621662,
+        "NU_NOTA_MT": 564.400011,
+        "NU_NOTA_REDACAO": 671.76233
+      },
+      "sensibilidade_sem_esta_uf": false
+    },
+    "MS": {
+      "n_amostra_2025": 907,
+      "n_amostra_2023": 714,
+      "A": 531.134916,
+      "B": 543.865275,
+      "C": 543.867983,
+      "C_mista_privada": 546.393543,
+      "C_internet_em_branco": 544.416185,
+      "C_presenca_calibrada": 542.867095,
+      "presenca_prevista_modelo": 0.729125,
+      "presenca_real_2025": 0.758683,
+      "delta_logit": 0.171532,
+      "inscritos_universo_aproximado_2025": 21478,
+      "vies_universo_estimado": 1.943539,
+      "A_por_prova": {
+        "NU_NOTA_CN": 488.98463,
+        "NU_NOTA_CH": 517.261305,
+        "NU_NOTA_LC": 512.539057,
+        "NU_NOTA_MT": 524.075244,
+        "NU_NOTA_REDACAO": 612.814345
+      },
+      "sensibilidade_sem_esta_uf": true
+    },
+    "MT": {
+      "n_amostra_2025": 1381,
+      "n_amostra_2023": 1004,
+      "A": 524.275288,
+      "B": 541.410271,
+      "C": 533.77315,
+      "C_mista_privada": 536.498893,
+      "C_internet_em_branco": 534.721268,
+      "C_presenca_calibrada": 536.455434,
+      "presenca_prevista_modelo": 0.707405,
+      "presenca_real_2025": 0.612898,
+      "delta_logit": -0.462774,
+      "inscritos_universo_aproximado_2025": 32671,
+      "vies_universo_estimado": 1.880407,
+      "A_por_prova": {
+        "NU_NOTA_CN": 482.752699,
+        "NU_NOTA_CH": 510.743272,
+        "NU_NOTA_LC": 505.984404,
+        "NU_NOTA_MT": 511.928534,
+        "NU_NOTA_REDACAO": 609.967531
+      },
+      "sensibilidade_sem_esta_uf": true
+    },
+    "PA": {
+      "n_amostra_2025": 3342,
+      "n_amostra_2023": 2415,
+      "A": 511.771372,
+      "B": 510.85245,
+      "C": 505.216685,
+      "C_mista_privada": 507.248855,
+      "C_internet_em_branco": 507.914216,
+      "C_presenca_calibrada": 503.872181,
+      "presenca_prevista_modelo": 0.703726,
+      "presenca_real_2025": 0.747763,
+      "delta_logit": 0.245864,
+      "inscritos_universo_aproximado_2025": 76543,
+      "vies_universo_estimado": 2.773419,
+      "A_por_prova": {
+        "NU_NOTA_CN": 468.957281,
+        "NU_NOTA_CH": 496.559118,
+        "NU_NOTA_LC": 489.874805,
+        "NU_NOTA_MT": 487.159656,
+        "NU_NOTA_REDACAO": 616.305998
+      },
+      "sensibilidade_sem_esta_uf": true
+    },
+    "PB": {
+      "n_amostra_2025": 1636,
+      "n_amostra_2023": 1416,
+      "A": 526.935418,
+      "B": 517.322598,
+      "C": 515.392884,
+      "C_mista_privada": 517.715566,
+      "C_internet_em_branco": 517.055559,
+      "C_presenca_calibrada": 514.120372,
+      "presenca_prevista_modelo": 0.759329,
+      "presenca_real_2025": 0.79705,
+      "delta_logit": 0.242131,
+      "inscritos_universo_aproximado_2025": 39251,
+      "vies_universo_estimado": 1.118258,
+      "A_por_prova": {
+        "NU_NOTA_CN": 478.916456,
+        "NU_NOTA_CH": 505.596477,
+        "NU_NOTA_LC": 501.789657,
+        "NU_NOTA_MT": 509.833604,
+        "NU_NOTA_REDACAO": 638.540896
+      },
+      "sensibilidade_sem_esta_uf": false
+    },
+    "PE": {
+      "n_amostra_2025": 3597,
+      "n_amostra_2023": 2791,
+      "A": 528.575696,
+      "B": 521.109486,
+      "C": 520.39405,
+      "C_mista_privada": 523.281129,
+      "C_internet_em_branco": 521.73916,
+      "C_presenca_calibrada": 520.232119,
+      "presenca_prevista_modelo": 0.787494,
+      "presenca_real_2025": 0.79293,
+      "delta_logit": 0.035565,
+      "inscritos_universo_aproximado_2025": 87835,
+      "vies_universo_estimado": 0.74916,
+      "A_por_prova": {
+        "NU_NOTA_CN": 480.547388,
+        "NU_NOTA_CH": 506.080782,
+        "NU_NOTA_LC": 504.943435,
+        "NU_NOTA_MT": 522.183101,
+        "NU_NOTA_REDACAO": 629.123772
+      },
+      "sensibilidade_sem_esta_uf": false
+    },
+    "PI": {
+      "n_amostra_2025": 1559,
+      "n_amostra_2023": 1188,
+      "A": 515.323365,
+      "B": 509.059706,
+      "C": 509.681786,
+      "C_mista_privada": 511.705936,
+      "C_internet_em_branco": 511.860313,
+      "C_presenca_calibrada": 508.096054,
+      "presenca_prevista_modelo": 0.753248,
+      "presenca_real_2025": 0.806758,
+      "delta_logit": 0.342014,
+      "inscritos_universo_aproximado_2025": 36876,
+      "vies_universo_estimado": 1.987091,
+      "A_por_prova": {
+        "NU_NOTA_CN": 470.487289,
+        "NU_NOTA_CH": 493.020133,
+        "NU_NOTA_LC": 491.115264,
+        "NU_NOTA_MT": 499.901868,
+        "NU_NOTA_REDACAO": 622.092272
+      },
+      "sensibilidade_sem_esta_uf": true
+    },
+    "PR": {
+      "n_amostra_2025": 3683,
+      "n_amostra_2023": 3164,
+      "A": 541.761129,
+      "B": 550.51566,
+      "C": 548.615825,
+      "C_mista_privada": 551.10686,
+      "C_internet_em_branco": 548.959871,
+      "C_presenca_calibrada": 549.068203,
+      "presenca_prevista_modelo": 0.757862,
+      "presenca_real_2025": 0.743455,
+      "delta_logit": -0.084049,
+      "inscritos_universo_aproximado_2025": 86784,
+      "vies_universo_estimado": 1.599647,
+      "A_por_prova": {
+        "NU_NOTA_CN": 498.553953,
+        "NU_NOTA_CH": 529.482013,
+        "NU_NOTA_LC": 526.943689,
+        "NU_NOTA_MT": 543.777738,
+        "NU_NOTA_REDACAO": 610.048254
+      },
+      "sensibilidade_sem_esta_uf": true
+    },
+    "RJ": {
+      "n_amostra_2025": 4327,
+      "n_amostra_2023": 3725,
+      "A": 555.70951,
+      "B": 558.070487,
+      "C": 553.19708,
+      "C_mista_privada": 556.57986,
+      "C_internet_em_branco": 553.9944,
+      "C_presenca_calibrada": 551.063708,
+      "presenca_prevista_modelo": 0.738857,
+      "presenca_real_2025": 0.785157,
+      "delta_logit": 0.291617,
+      "inscritos_universo_aproximado_2025": 102489,
+      "vies_universo_estimado": 2.191048,
+      "A_por_prova": {
+        "NU_NOTA_CN": 502.571199,
+        "NU_NOTA_CH": 537.154435,
+        "NU_NOTA_LC": 529.178525,
+        "NU_NOTA_MT": 552.086997,
+        "NU_NOTA_REDACAO": 657.556392
+      },
+      "sensibilidade_sem_esta_uf": true
+    },
+    "RN": {
+      "n_amostra_2025": 1257,
+      "n_amostra_2023": 1028,
+      "A": 541.653041,
+      "B": 523.834751,
+      "C": 522.724033,
+      "C_mista_privada": 524.490964,
+      "C_internet_em_branco": 523.837545,
+      "C_presenca_calibrada": 519.722164,
+      "presenca_prevista_modelo": 0.771018,
+      "presenca_real_2025": 0.853261,
+      "delta_logit": 0.599091,
+      "inscritos_universo_aproximado_2025": 31021,
+      "vies_universo_estimado": 0.668346,
+      "A_por_prova": {
+        "NU_NOTA_CN": 490.725047,
+        "NU_NOTA_CH": 520.269859,
+        "NU_NOTA_LC": 515.1836,
+        "NU_NOTA_MT": 529.018248,
+        "NU_NOTA_REDACAO": 653.068449
+      },
+      "sensibilidade_sem_esta_uf": false
+    },
+    "RO": {
+      "n_amostra_2025": 843,
+      "n_amostra_2023": 573,
+      "A": 513.771873,
+      "B": 512.252458,
+      "C": 516.69304,
+      "C_mista_privada": 518.564466,
+      "C_internet_em_branco": 517.4511,
+      "C_presenca_calibrada": 518.129245,
+      "presenca_prevista_modelo": 0.75102,
+      "presenca_real_2025": 0.67975,
+      "delta_logit": -0.377964,
+      "inscritos_universo_aproximado_2025": 20612,
+      "vies_universo_estimado": 0.399564,
+      "A_por_prova": {
+        "NU_NOTA_CN": 472.483199,
+        "NU_NOTA_CH": 498.630232,
+        "NU_NOTA_LC": 494.364642,
+        "NU_NOTA_MT": 497.673925,
+        "NU_NOTA_REDACAO": 605.707366
+      },
+      "sensibilidade_sem_esta_uf": false
+    },
+    "RR": {
+      "n_amostra_2025": 197,
+      "n_amostra_2023": 129,
+      "A": 526.186597,
+      "B": 526.375198,
+      "C": 511.709361,
+      "C_mista_privada": 513.426517,
+      "C_internet_em_branco": 513.125323,
+      "C_presenca_calibrada": 516.432145,
+      "presenca_prevista_modelo": 0.733308,
+      "presenca_real_2025": 0.578867,
+      "delta_logit": -0.766337,
+      "inscritos_universo_aproximado_2025": 4571,
+      "vies_universo_estimado": 1.849087,
+      "A_por_prova": {
+        "NU_NOTA_CN": 485.712073,
+        "NU_NOTA_CH": 516.890934,
+        "NU_NOTA_LC": 515.008155,
+        "NU_NOTA_MT": 515.709066,
+        "NU_NOTA_REDACAO": 597.612756
+      },
+      "sensibilidade_sem_esta_uf": true
+    },
+    "RS": {
+      "n_amostra_2025": 2698,
+      "n_amostra_2023": 2344,
+      "A": 557.168539,
+      "B": 551.27039,
+      "C": 545.174484,
+      "C_mista_privada": 547.275994,
+      "C_internet_em_branco": 545.50955,
+      "C_presenca_calibrada": 545.067484,
+      "presenca_prevista_modelo": 0.737054,
+      "presenca_real_2025": 0.740408,
+      "delta_logit": 0.019171,
+      "inscritos_universo_aproximado_2025": 64948,
+      "vies_universo_estimado": 1.276443,
+      "A_por_prova": {
+        "NU_NOTA_CN": 502.996237,
+        "NU_NOTA_CH": 537.069246,
+        "NU_NOTA_LC": 534.182963,
+        "NU_NOTA_MT": 557.588011,
+        "NU_NOTA_REDACAO": 654.00624
+      },
+      "sensibilidade_sem_esta_uf": false
+    },
+    "SC": {
+      "n_amostra_2025": 2055,
+      "n_amostra_2023": 1708,
+      "A": 557.23272,
+      "B": 553.980309,
+      "C": 551.863061,
+      "C_mista_privada": 554.669169,
+      "C_internet_em_branco": 552.064472,
+      "C_presenca_calibrada": 553.678453,
+      "presenca_prevista_modelo": 0.756395,
+      "presenca_real_2025": 0.701054,
+      "delta_logit": -0.310594,
+      "inscritos_universo_aproximado_2025": 50591,
+      "vies_universo_estimado": 0.523127,
+      "A_por_prova": {
+        "NU_NOTA_CN": 506.389523,
+        "NU_NOTA_CH": 541.235126,
+        "NU_NOTA_LC": 533.561954,
+        "NU_NOTA_MT": 558.699633,
+        "NU_NOTA_REDACAO": 646.277363
+      },
+      "sensibilidade_sem_esta_uf": false
+    },
+    "SE": {
+      "n_amostra_2025": 921,
+      "n_amostra_2023": 735,
+      "A": 525.41551,
+      "B": 516.037606,
+      "C": 517.598366,
+      "C_mista_privada": 520.938536,
+      "C_internet_em_branco": 519.896926,
+      "C_presenca_calibrada": 515.913578,
+      "presenca_prevista_modelo": 0.777035,
+      "presenca_real_2025": 0.830918,
+      "delta_logit": 0.373948,
+      "inscritos_universo_aproximado_2025": 22498,
+      "vies_universo_estimado": 0.720985,
+      "A_por_prova": {
+        "NU_NOTA_CN": 476.443463,
+        "NU_NOTA_CH": 501.566642,
+        "NU_NOTA_LC": 496.656811,
+        "NU_NOTA_MT": 502.902173,
+        "NU_NOTA_REDACAO": 649.50846
+      },
+      "sensibilidade_sem_esta_uf": false
+    },
+    "SP": {
+      "n_amostra_2025": 13805,
+      "n_amostra_2023": 10132,
+      "A": 557.307979,
+      "B": 560.985594,
+      "C": 556.012097,
+      "C_mista_privada": 558.538284,
+      "C_internet_em_branco": 556.428815,
+      "C_presenca_calibrada": 557.569694,
+      "presenca_prevista_modelo": 0.755364,
+      "presenca_real_2025": 0.713545,
+      "delta_logit": -0.23771,
+      "inscritos_universo_aproximado_2025": 335937,
+      "vies_universo_estimado": 0.909625,
+      "A_por_prova": {
+        "NU_NOTA_CN": 505.542058,
+        "NU_NOTA_CH": 538.85933,
+        "NU_NOTA_LC": 536.112263,
+        "NU_NOTA_MT": 563.344989,
+        "NU_NOTA_REDACAO": 642.681255
+      },
+      "sensibilidade_sem_esta_uf": false
+    },
+    "TO": {
+      "n_amostra_2025": 574,
+      "n_amostra_2023": 497,
+      "A": 509.393587,
+      "B": 509.102847,
+      "C": 509.903765,
+      "C_mista_privada": 511.890887,
+      "C_internet_em_branco": 511.631163,
+      "C_presenca_calibrada": 511.024609,
+      "presenca_prevista_modelo": 0.729419,
+      "presenca_real_2025": 0.683337,
+      "delta_logit": -0.240656,
+      "inscritos_universo_aproximado_2025": 14037,
+      "vies_universo_estimado": 0.563956,
+      "A_por_prova": {
+        "NU_NOTA_CN": 469.511794,
+        "NU_NOTA_CH": 495.562766,
+        "NU_NOTA_LC": 493.56534,
+        "NU_NOTA_MT": 493.658625,
+        "NU_NOTA_REDACAO": 594.669412
+      },
+      "sensibilidade_sem_esta_uf": false
+    }
+  },
+  "por_uf_escola": {
+    "AC|Pública": {
+      "A": 500.724607,
+      "B": 504.2028,
+      "C": 496.707349,
+      "n_amostra_2025": 378
+    },
+    "AC|Privada": {
+      "A": 615.854634,
+      "B": 610.6336,
+      "C": 615.718414,
+      "n_amostra_2025": 24
+    },
+    "AL|Pública": {
+      "A": 494.068571,
+      "B": 496.276535,
+      "C": 497.878816,
+      "n_amostra_2025": 1271
+    },
+    "AL|Privada": {
+      "A": 584.561001,
+      "B": 599.775917,
+      "C": 602.754488,
+      "n_amostra_2025": 190
+    },
+    "AM|Pública": {
+      "A": 481.205896,
+      "B": 494.264255,
+      "C": 489.257294,
+      "n_amostra_2025": 1903
+    },
+    "AM|Privada": {
+      "A": 598.508192,
+      "B": 605.366366,
+      "C": 594.348441,
+      "n_amostra_2025": 97
+    },
+    "AP|Pública": {
+      "A": 499.054405,
+      "B": 493.42821,
+      "C": 489.759317,
+      "n_amostra_2025": 329
+    },
+    "AP|Privada": {
+      "A": 591.85224,
+      "B": 586.848767,
+      "C": 609.082175,
+      "n_amostra_2025": 34
+    },
+    "BA|Pública": {
+      "A": 506.414831,
+      "B": 504.957139,
+      "C": 499.942618,
+      "n_amostra_2025": 4981
+    },
+    "BA|Privada": {
+      "A": 608.310487,
+      "B": 603.921116,
+      "C": 606.386431,
+      "n_amostra_2025": 564
+    },
+    "CE|Pública": {
+      "A": 493.428711,
+      "B": 495.266372,
+      "C": 496.032209,
+      "n_amostra_2025": 4354
+    },
+    "CE|Privada": {
+      "A": 622.277018,
+      "B": 601.429743,
+      "C": 604.724048,
+      "n_amostra_2025": 386
+    },
+    "DF|Pública": {
+      "A": 524.749549,
+      "B": 513.220107,
+      "C": 514.57808,
+      "n_amostra_2025": 780
+    },
+    "DF|Privada": {
+      "A": 622.128766,
+      "B": 613.392684,
+      "C": 618.151832,
+      "n_amostra_2025": 302
+    },
+    "ES|Pública": {
+      "A": 540.844633,
+      "B": 528.695732,
+      "C": 529.090062,
+      "n_amostra_2025": 1179
+    },
+    "ES|Privada": {
+      "A": 630.632445,
+      "B": 632.679859,
+      "C": 632.413637,
+      "n_amostra_2025": 173
+    },
+    "GO|Pública": {
+      "A": 516.111339,
+      "B": 514.970199,
+      "C": 515.030707,
+      "n_amostra_2025": 2536
+    },
+    "GO|Privada": {
+      "A": 625.905676,
+      "B": 614.445472,
+      "C": 611.354831,
+      "n_amostra_2025": 370
+    },
+    "MA|Pública": {
+      "A": 486.178939,
+      "B": 502.553602,
+      "C": 500.341552,
+      "n_amostra_2025": 2613
+    },
+    "MA|Privada": {
+      "A": 602.238924,
+      "B": 607.350184,
+      "C": 606.319421,
+      "n_amostra_2025": 179
+    },
+    "MG|Pública": {
+      "A": 539.920753,
+      "B": 529.836714,
+      "C": 526.321146,
+      "n_amostra_2025": 6164
+    },
+    "MG|Privada": {
+      "A": 645.199276,
+      "B": 627.947054,
+      "C": 626.907656,
+      "n_amostra_2025": 836
+    },
+    "MS|Pública": {
+      "A": 514.128297,
+      "B": 527.332333,
+      "C": 524.763948,
+      "n_amostra_2025": 774
+    },
+    "MS|Privada": {
+      "A": 614.684014,
+      "B": 621.501042,
+      "C": 625.773808,
+      "n_amostra_2025": 133
+    },
+    "MT|Pública": {
+      "A": 506.55071,
+      "B": 525.41792,
+      "C": 520.281775,
+      "n_amostra_2025": 1237
+    },
+    "MT|Privada": {
+      "A": 616.661244,
+      "B": 620.904646,
+      "C": 618.620557,
+      "n_amostra_2025": 144
+    },
+    "PA|Pública": {
+      "A": 495.197954,
+      "B": 494.488607,
+      "C": 490.55023,
+      "n_amostra_2025": 2988
+    },
+    "PA|Privada": {
+      "A": 600.455754,
+      "B": 588.525601,
+      "C": 594.101572,
+      "n_amostra_2025": 354
+    },
+    "PB|Pública": {
+      "A": 505.999078,
+      "B": 497.063891,
+      "C": 497.09761,
+      "n_amostra_2025": 1413
+    },
+    "PB|Privada": {
+      "A": 612.111261,
+      "B": 600.685959,
+      "C": 603.396735,
+      "n_amostra_2025": 223
+    },
+    "PE|Pública": {
+      "A": 513.294769,
+      "B": 504.999107,
+      "C": 503.134701,
+      "n_amostra_2025": 3107
+    },
+    "PE|Privada": {
+      "A": 606.10438,
+      "B": 612.280461,
+      "C": 607.056266,
+      "n_amostra_2025": 490
+    },
+    "PI|Pública": {
+      "A": 493.243295,
+      "B": 494.252094,
+      "C": 494.127528,
+      "n_amostra_2025": 1380
+    },
+    "PI|Privada": {
+      "A": 629.258128,
+      "B": 593.587825,
+      "C": 600.984561,
+      "n_amostra_2025": 179
+    },
+    "PR|Pública": {
+      "A": 523.963685,
+      "B": 529.141947,
+      "C": 529.528516,
+      "n_amostra_2025": 3068
+    },
+    "PR|Privada": {
+      "A": 613.383938,
+      "B": 624.564003,
+      "C": 621.600294,
+      "n_amostra_2025": 615
+    },
+    "RJ|Pública": {
+      "A": 523.002948,
+      "B": 523.234741,
+      "C": 519.236916,
+      "n_amostra_2025": 3154
+    },
+    "RJ|Privada": {
+      "A": 613.154911,
+      "B": 620.024801,
+      "C": 618.529428,
+      "n_amostra_2025": 1173
+    },
+    "RN|Pública": {
+      "A": 522.153819,
+      "B": 504.042934,
+      "C": 501.083797,
+      "n_amostra_2025": 1044
+    },
+    "RN|Privada": {
+      "A": 614.823176,
+      "B": 604.499109,
+      "C": 603.808929,
+      "n_amostra_2025": 213
+    },
+    "RO|Pública": {
+      "A": 507.322945,
+      "B": 508.049222,
+      "C": 510.546374,
+      "n_amostra_2025": 800
+    },
+    "RO|Privada": {
+      "A": 594.989438,
+      "B": 593.528238,
+      "C": 605.84269,
+      "n_amostra_2025": 43
+    },
+    "RR|Pública": {
+      "A": 518.245323,
+      "B": 511.327395,
+      "C": 501.268968,
+      "n_amostra_2025": 182
+    },
+    "RR|Privada": {
+      "A": 581.631127,
+      "B": 631.720276,
+      "C": 606.892311,
+      "n_amostra_2025": 15
+    },
+    "RS|Pública": {
+      "A": 540.160041,
+      "B": 531.606216,
+      "C": 528.291423,
+      "n_amostra_2025": 2327
+    },
+    "RS|Privada": {
+      "A": 623.83422,
+      "B": 624.835729,
+      "C": 624.42317,
+      "n_amostra_2025": 371
+    },
+    "SC|Pública": {
+      "A": 535.614742,
+      "B": 534.937847,
+      "C": 531.886867,
+      "n_amostra_2025": 1687
+    },
+    "SC|Privada": {
+      "A": 625.510495,
+      "B": 619.754649,
+      "C": 621.732014,
+      "n_amostra_2025": 368
+    },
+    "SE|Pública": {
+      "A": 504.331338,
+      "B": 498.084061,
+      "C": 500.385038,
+      "n_amostra_2025": 794
+    },
+    "SE|Privada": {
+      "A": 609.42188,
+      "B": 598.284563,
+      "C": 601.68102,
+      "n_amostra_2025": 127
+    },
+    "SP|Pública": {
+      "A": 532.018344,
+      "B": 532.91512,
+      "C": 529.367415,
+      "n_amostra_2025": 10722
+    },
+    "SP|Privada": {
+      "A": 612.422046,
+      "B": 624.923136,
+      "C": 625.644435,
+      "n_amostra_2025": 3083
+    },
+    "TO|Pública": {
+      "A": 497.72036,
+      "B": 500.092463,
+      "C": 500.760667,
+      "n_amostra_2025": 537
+    },
+    "TO|Privada": {
+      "A": 616.934556,
+      "B": 603.44851,
+      "C": 609.649524,
+      "n_amostra_2025": 37
+    }
+  }
+}
