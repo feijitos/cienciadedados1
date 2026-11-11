@@ -1,0 +1,105 @@
+{
+  "congelado_em": "2026-11-10T22:34:17",
+  "regra": "Modelos congelados: não reajustar. Toda previsão de 2025 usa estes arquivos (conferir o SHA-256).",
+  "versoes": {
+    "python": "3.11.9",
+    "scikit-learn": "1.9.1",
+    "numpy": "2.4.6",
+    "pandas": "3.0.6",
+    "joblib": "1.6.0"
+  },
+  "SEED": 42,
+  "dados": "Amostra ENEM 2023 (4% de cada UF), dados/processados/",
+  "variaveis": {
+    "numericas": [
+      "LOG_RENDA_PC",
+      "N_MORADORES",
+      "ESC_MAE",
+      "ESC_PAI",
+      "N_COMPUTADORES",
+      "TEM_INTERNET",
+      "ATRASO_ESCOLAR",
+      "IDH_ESTADUAL"
+    ],
+    "categoricas": [
+      "TP_ESCOLA",
+      "REGIAO",
+      "FAIXA_RENDA",
+      "SEXO",
+      "COR_RACA"
+    ],
+    "referencias": {
+      "TP_ESCOLA": "Pública",
+      "REGIAO": "Nordeste",
+      "FAIXA_RENDA": "Baixa Renda",
+      "SEXO": "Feminino",
+      "COR_RACA": "Branca"
+    }
+  },
+  "regressao": {
+    "arquivo": "regressao_nota_final.joblib",
+    "sha256": "335291c19cbf0f3a301ffac80f8d41905cacf9e0dbe9be9c44edd5ba88776266",
+    "modelo": "Pipeline(preprocessador, LinearRegression())",
+    "alvo": "NOTA_FINAL (média das 5 provas)",
+    "universo": "presentes com as 5 notas",
+    "divisao": "80/20 estratificada por ALTO_DESEMPENHO",
+    "treino": 33625,
+    "teste": 8407,
+    "metricas": {
+      "teste": {
+        "R²": 0.299305,
+        "MAE": 62.71523,
+        "RMSE": 79.561243
+      },
+      "treino": {
+        "R²": 0.309762,
+        "MAE": 63.17185,
+        "RMSE": 79.782191
+      },
+      "cv_media": {
+        "R²": 0.308746,
+        "MAE": 63.211445,
+        "RMSE": 79.835408
+      },
+      "cv_dp": {
+        "R²": 0.005515,
+        "MAE": 0.699704,
+        "RMSE": 0.759544
+      }
+    },
+    "teste_por_uf": {
+      "UFs": 27,
+      "alunos": 8407,
+      "menor_n": 20,
+      "MAE": 9.325644,
+      "MAE_ponderado": 6.413618,
+      "RMSE": 11.69618,
+      "RMSE_ponderado": 8.36328,
+      "vies": 2.404204,
+      "pearson": 0.869395,
+      "spearman": 0.849817
+    }
+  },
+  "presenca": {
+    "arquivo": "presenca.joblib",
+    "sha256": "8a38672df7e9b40c2ab49682b38bebde0d6273abb044f71ce31db3f327c57aa9",
+    "modelo": "Pipeline(preprocessador, LogisticRegression(max_iter=2000))",
+    "alvo": "PRESENTE_5 (presente nos dois dias e com as 5 notas)",
+    "universo": "todos os inscritos da amostra",
+    "divisao": "80/20 estratificada por PRESENTE_5",
+    "treino": 44838,
+    "teste": {
+      "ROC-AUC": 0.711258,
+      "Brier": 0.167898,
+      "log_loss": 0.507323,
+      "taxa_observada": 0.749955,
+      "media_prevista": 0.7485,
+      "maior_desvio_calibracao_decis": 0.028557
+    },
+    "teste_correcao_por_uf": {
+      "descricao": "MAE entre UFs da média prevista da nota em relação à média prevista só entre os presentes",
+      "MAE_ponderada_pela_presenca": 1.80694,
+      "MAE_sem_correcao": 7.869954
+    }
+  }
+}

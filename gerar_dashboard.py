@@ -22,6 +22,8 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.offline import get_plotlyjs, get_plotlyjs_version
 
+from congelar_modelo import ARQ_META as ARQ_META_MODELOS
+from congelar_modelo import carregar_congelados, metricas_por_uf, previsto_real_por_uf
 from src.dados import ORDEM_RENDA, carregar_dados, etl, recorte_presentes
 from src.estilo import (AZUL, CINZA_GRADE, CORES_ESCOLA, CORES_MODELOS, CORES_RENDA, LARANJA, RAMPA_AZUL, TINTA,
                         TINTA_SECUNDARIA, VERDE_AGUA)
@@ -713,6 +715,104 @@ def grafico_modelos(res):
 
 
 # --------------------------------------------------------------------------
+# Modelo congelado: previsto x real por UF no conjunto de teste de 2023 (base da comparação com 2025)
+# --------------------------------------------------------------------------
+# Erro com sinal: azul = previsto acima do real, laranja = abaixo (mesmo par do gráfico de coeficientes, validado
+# nos dois temas); meio em cinza neutro, um por tema. O JS troca a escala pelo layout.meta.escalas.
+ESCALA_ERRO = {"claro": [[0, LARANJA], [0.5, "#f0efec"], [1, AZUL]],
+               "escuro": [[0, ESCURO[LARANJA]], [0.5, "#383835"], [1, ESCURO[AZUL]]]}
+
+
+def grafico_previsto_real(g, regiao):
+    """Pontos por UF: média prevista (x) × média real (y) no teste, com a linha previsto = real."""
+    lo = float(np.floor(min(g["previsto"].min(), g["real"].min()) / 10) * 10)
+    hi = float(np.ceil(max(g["previsto"].max(), g["real"].max()) / 10) * 10)
+    pos = dict(zip(g.index, _posicoes_rotulos(g["previsto"], g["real"], np.full(len(g), 12.0), larg=900, alt=420)))
+    fig = go.Figure()
+    fig.add_scatter(x=[lo, hi], y=[lo, hi], mode="lines", line=dict(color=EIXO, width=1.5, dash="dash"),
+                    hoverinfo="skip", showlegend=False)
+    for r in REGIOES:
+        s = g[regiao.reindex(g.index) == r]
+        fig.add_scatter(
+            x=s["previsto"].round(1), y=s["real"].round(1), mode="markers+text", name=r,
+            text=[u if pos[u] else "" for u in s.index], textposition=[pos[u] or "top center" for u in s.index],
+            textfont=dict(size=11, color=TINTA_SECUNDARIA),
+            customdata=[[u, round(e, 1), int(n)] for u, e, n in zip(s.index, s["erro"], s["n"])],
+            marker=dict(color=CORES_REGIAO[r], symbol=SIMBOLOS_REGIAO[r], size=11, line=dict(color=SUPERFICIE, width=1.5)),
+            hovertemplate="<b>%{customdata[0]}</b><br>Região: " + r + "<br>Prevista: %{x:.1~f} pts<br>Real: %{y:.1~f} pts"
+                          "<br>Erro: %{customdata[1]:+.1~f} pts<br>Alunos no teste: %{customdata[2]}<extra></extra>")
+    _base(fig, 500, t=10).update_layout(
+        xaxis=dict(range=[lo, hi], title=dict(text="Média prevista pelo modelo (pts)")),
+        yaxis=dict(range=[lo, hi], title=dict(text="Média real (pts)")), legend=dict(y=-0.14),
+        annotations=[_anot("previsto = real", hi, hi, xanchor="right", yanchor="top", yshift=-4, xshift=-4),
+                     _anot("real acima do previsto", lo, hi, xanchor="left", yanchor="top", xshift=6, yshift=-4),
+                     _anot("real abaixo do previsto", hi, lo, xanchor="right", yanchor="bottom", xshift=-6, yshift=6)])
+    n = len(REGIOES)
+    return _responsivo(fig, movel={"margin.l": 44}, desktop={"margin.l": 50},
+                       dados_movel=[({"mode": "markers"}, list(range(1, n + 1)))],
+                       dados_desktop=[({"mode": "markers+text"}, list(range(1, n + 1)))])
+
+
+def grafico_mapa_erros(g, js):
+    """Mapa do erro (previsto − real) por UF no teste. A malha vem do mapa da seção 1 (o JS copia ao carregar)."""
+    erro = g["erro"].reindex(js["ufs"])
+    lim = float(np.ceil(erro.abs().max() / 5) * 5)
+    marcas = [-lim, -lim / 2, 0.0, lim / 2, lim]
+    cd = [[u, round(float(g.loc[u, "previsto"]), 1), round(float(g.loc[u, "real"]), 1), int(g.loc[u, "n"])]
+          for u in js["ufs"]]
+    fig = go.Figure()
+    fig.add_choropleth(
+        geojson={"type": "FeatureCollection", "features": []}, featureidkey="properties.codarea", locations=js["cod"],
+        z=erro.round(1).tolist(), zmin=-lim, zmax=lim, colorscale=ESCALA_ERRO["claro"], customdata=cd,
+        marker=dict(line=dict(color=EIXO, width=0.6)),
+        colorbar=dict(title=dict(text="previsto − real (pts)", font=dict(color=TINTA_SECUNDARIA), side="top"),
+                      thickness=10, len=0.5, outlinewidth=0, tickfont=dict(color=TINTA_SECUNDARIA), orientation="h",
+                      x=0.5, xanchor="center", y=0, yanchor="top", tickmode="array", tickvals=marcas,
+                      ticktext=[_sinal(v) or "0" for v in marcas]),
+        hovertemplate="<b>%{customdata[0]}</b><br>Erro: %{z:+.1~f} pts<br>Prevista: %{customdata[1]:.1~f} pts"
+                      "<br>Real: %{customdata[2]:.1~f} pts<br>Alunos no teste: %{customdata[3]}<extra></extra>")
+    _base(fig, 560).update_layout(
+        margin=dict(l=0, r=0, t=0, b=50),
+        geo=dict(fitbounds="locations", visible=False, bgcolor="rgba(0,0,0,0)", projection=dict(type="mercator")))
+    fig = _responsivo(fig, movel={"height": 440}, desktop={"height": 560},
+                      dados_movel=[({"colorbar.len": 0.9}, [0])], dados_desktop=[({"colorbar.len": 0.5}, [0])])
+    return fig.update_layout(meta={**fig.layout.meta, "escalas": ESCALA_ERRO})
+
+
+def secao_congelado(dm, regiao, js_mapa):
+    """Previsto × real por UF e mapa dos erros, com o modelo congelado em resultados/modelos/ (vazio se não houver)."""
+    if not ARQ_META_MODELOS.exists():
+        print("Aviso: modelos congelados não encontrados (rode congelar_modelo.py); previsto × real por UF omitido.")
+        return ""
+    reg, _, meta = carregar_congelados()
+    g = previsto_real_por_uf(reg, dm)
+    m = metricas_por_uf(g)
+    # o gráfico tem que mostrar o mesmo teste registrado no congelamento
+    assert all(abs(m[k] - v) < 1e-6 for k, v in meta["regressao"]["teste_por_uf"].items()), "teste por UF mudou"
+    assert m["menor_n"] >= MIN_CUBO, "UF com menos alunos no teste do que o mínimo publicável"
+    poucos = g.index[g["n"] < MIN_N].tolist()
+    ordem = "quase toda" if m["spearman"] >= 0.9 else "em boa parte" if m["spearman"] >= 0.7 else "só em parte"
+    aviso = (f" {', '.join(poucos)} {'tem' if len(poucos) == 1 else 'têm'} menos de {MIN_N} alunos no teste, então "
+             f"{'sua média é instável' if len(poucos) == 1 else 'suas médias são instáveis'}." if poucos else "")
+    s = _figura(f"Por UF, a média prevista erra {_num(m['MAE'])} pontos em média, e a ordem dos estados se mantém {ordem} "
+                f"(correlação de posições = {_br(m['spearman'], 2)})",
+                f"Cada ponto é uma UF: média da nota final prevista pelo modelo congelado e média real, só com os "
+                f"{_br(m['alunos'], 0)} alunos do conjunto de teste, que o modelo não viu no treino. Ponderando pelo número "
+                f"de alunos, o erro médio é de {_num(m['MAE_ponderado'])} pontos. O modelo não usa a UF, só a região e o IDHM "
+                f"do estado.{aviso} É a régua para a comparação com o ENEM 2025.",
+                _assinatura(grafico_previsto_real(g, regiao)).to_html(full_html=False, include_plotlyjs=False, config=CFG))
+    acima, abaixo = int((g["erro"] > 0).sum()), int((g["erro"] < 0).sum())
+    u_max, u_min = g["erro"].idxmax(), g["erro"].idxmin()
+    s += _figura(f"O modelo prevê acima do real em {acima} UFs e abaixo em {abaixo}; os maiores erros são em "
+                 f"{u_max} ({_sinal(g.loc[u_max, 'erro'])}) e {u_min} ({_sinal(g.loc[u_min, 'erro'])})",
+                 "Erro = média prevista − média real da nota final no conjunto de teste. Azul: o modelo prevê acima do "
+                 "real; laranja: abaixo; quanto mais intensa a cor, maior o erro.",
+                 '<div class="plot">' + _assinatura(grafico_mapa_erros(g, js_mapa)).to_html(
+                     full_html=False, include_plotlyjs=False, config=CFG, div_id="mapa-erros") + "</div>")
+    return s
+
+
+# --------------------------------------------------------------------------
 # Página
 # --------------------------------------------------------------------------
 def _figura(titulo, sub, div, classe=""):
@@ -929,7 +1029,9 @@ function preparar(gd){
 function tema(gd){
   var t=preparar(gd),nome=escuro.matches?'escuro':'claro'; if(t.atual===nome)return; t.atual=nome;
   t.dat.forEach(function(d,i){if(Object.keys(d[nome]).length)Plotly.restyle(gd,d[nome],[i]);});
-  if(Object.keys(t.lay[nome]).length)Plotly.relayout(gd,t.lay[nome]);}
+  if(Object.keys(t.lay[nome]).length)Plotly.relayout(gd,t.lay[nome]);
+  // escalas de cor não entram no mapa de cores acima: a figura pode trazer as duas em layout.meta.escalas
+  var es=gd.layout.meta&&gd.layout.meta.escalas;if(es)Plotly.restyle(gd,{colorscale:[es[nome]]},[0]);}
 function tamanho(gd){
   var m=gd.layout&&gd.layout.meta,k=movel.matches?'movel':'desktop'; if(!m||!m[k]||gd._tam===k)return; gd._tam=k;
   (m[k].data||[]).forEach(function(par){Plotly.restyle(gd,par[0],par[1]);});
@@ -1014,6 +1116,8 @@ function escala(){var t=escuro.matches?'escuro':'claro',g=D.cinza[t];
   Plotly.restyle(gd,{colorscale:[D.escala[t],[[0,g],[1,g]]]},[0,1]);}
 window.addEventListener('load',function(){
   Plotly.restyle(gd,{geojson:[gd.data[0].geojson]},[1]);
+  // o mapa dos erros (seção de modelos) usa a mesma malha, sem repeti-la no HTML
+  var ge=document.getElementById('mapa-erros');if(ge)Plotly.restyle(ge,{geojson:[gd.data[0].geojson]},[0]);
   calcular();escala();
   selProva.addEventListener('change',calcular);selEscala.addEventListener('change',calcular);sels.forEach(function(s){s.addEventListener('change',calcular);});
   document.getElementById('f-limpar').addEventListener('click',function(){selProva.value='0';sels.forEach(function(s){s.value='-1';});calcular();});
@@ -1199,13 +1303,15 @@ def main():
                      "teste). Cada barra é a associação de uma variável com a nota, controlando todas as outras; não é causa. "
                      "As variáveis numéricas são padronizadas (efeito de 1 desvio-padrão) e as categorias se comparam à "
                      "referência indicada.", div(grafico_coeficientes(res, nomes)))
+        s4 += secao_congelado(dm, aux["tab_uf"]["REGIAO"], js_mapa)
         s4 += _figura(f"Os três modelos ficam próximos, com F1 entre {_br(min(f1.values()), 2)} e {_br(max(f1.values()), 2)}; "
                       f"o modelo escolhido foi {html.escape(res['insights']['modelo_final'])}",
                       f"Classificação de quem passa de 700 pontos ({_pct(res['base']['taxa_alto_desempenho'] * 100)} dos alunos). "
                       "Métricas no conjunto de teste. A taxa base é a precisão de um palpite aleatório.",
                       div(grafico_modelos(res)))
         secoes.append(("modelos", 4, "rosa", "Modelos", "O que os modelos dizem",
-                       "Dois modelos da Entrega 2: uma regressão para a nota e classificadores para quem passa de 700.", s4))
+                       "Dois modelos da Entrega 2: uma regressão para a nota, testada também UF a UF, e classificadores "
+                       "para quem passa de 700.", s4))
     else:
         print(f"Aviso: {arq_res.relative_to(RAIZ)} não encontrado; a seção de modelos foi omitida "
               "(rode o notebook da Entrega 2 para gerá-lo).")
