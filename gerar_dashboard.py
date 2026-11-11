@@ -873,8 +873,10 @@ def secao_validacao(regiao, js_mapa):
     acima, abaixo = int((g["erro"] > 0).sum()), int((g["erro"] < 0).sum())
     u_max, u_min = g["erro"].idxmax(), g["erro"].idxmin()
     conteudo += _figura(
-        f"O modelo previu acima do real em {acima} UFs e abaixo em {abaixo}; os maiores erros são em {u_max} "
-        f"({_sinal(g.loc[u_max, 'erro'])}) e {u_min} ({_sinal(g.loc[u_min, 'erro'])})",
+        f"O modelo previu acima do real em {acima} UFs e abaixo em {abaixo}; "
+        + "; ".join(([f"o maior erro para cima foi em {u_max} ({_sinal(g.loc[u_max, 'erro'])})"] if acima else [])
+                    + ([f"o maior para baixo, em {u_min} ({_sinal(g.loc[u_min, 'erro'])})"] if abaixo else []))
+        .replace("; o maior para baixo", " e o maior para baixo"),
         "Erro = nota final média prevista − média real de 2025. Azul: o modelo previu acima do real; laranja: abaixo; "
         "quanto mais intensa a cor, maior o erro.",
         '<div class="plot">' + _assinatura(grafico_mapa_erros(g, js_mapa, rotulo_n="Alunos em 2025")).to_html(
