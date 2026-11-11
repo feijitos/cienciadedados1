@@ -15,6 +15,7 @@ import argparse
 import html
 import json
 import re
+import subprocess
 from pathlib import Path
 
 import numpy as np
@@ -723,8 +724,8 @@ ESCALA_ERRO = {"claro": [[0, LARANJA], [0.5, "#f0efec"], [1, AZUL]],
                "escuro": [[0, ESCURO[LARANJA]], [0.5, "#383835"], [1, ESCURO[AZUL]]]}
 
 
-def grafico_previsto_real(g, regiao):
-    """Pontos por UF: média prevista (x) × média real (y) no teste, com a linha previsto = real."""
+def grafico_previsto_real(g, regiao, rotulo_n="Alunos no teste"):
+    """Pontos por UF: média prevista (x) × média real (y), com a linha previsto = real."""
     lo = float(np.floor(min(g["previsto"].min(), g["real"].min()) / 10) * 10)
     hi = float(np.ceil(max(g["previsto"].max(), g["real"].max()) / 10) * 10)
     pos = dict(zip(g.index, _posicoes_rotulos(g["previsto"], g["real"], np.full(len(g), 12.0), larg=900, alt=420)))
@@ -740,7 +741,7 @@ def grafico_previsto_real(g, regiao):
             customdata=[[u, round(e, 1), int(n)] for u, e, n in zip(s.index, s["erro"], s["n"])],
             marker=dict(color=CORES_REGIAO[r], symbol=SIMBOLOS_REGIAO[r], size=11, line=dict(color=SUPERFICIE, width=1.5)),
             hovertemplate="<b>%{customdata[0]}</b><br>Região: " + r + "<br>Prevista: %{x:.1~f} pts<br>Real: %{y:.1~f} pts"
-                          "<br>Erro: %{customdata[1]:+.1~f} pts<br>Alunos no teste: %{customdata[2]}<extra></extra>")
+                          "<br>Erro: %{customdata[1]:+.1~f} pts<br>" + rotulo_n + ": %{customdata[2]:,.0f}<extra></extra>")
     _base(fig, 500, t=10).update_layout(
         xaxis=dict(range=[lo, hi], title=dict(text="Média prevista pelo modelo (pts)")),
         yaxis=dict(range=[lo, hi], title=dict(text="Média real (pts)")), legend=dict(y=-0.14),
@@ -813,6 +814,65 @@ def secao_congelado(dm, regiao, js_mapa):
 
 
 # --------------------------------------------------------------------------
+# Expectativa × realidade: 2025 (só resultados/previsao_2025.json e resultados/validacao_2025.json)
+# --------------------------------------------------------------------------
+ARQ_PREVISAO_2025 = RAIZ / "resultados" / "previsao_2025.json"
+ARQ_VALIDACAO_2025 = RAIZ / "resultados" / "validacao_2025.json"
+
+
+def _data_commit(h):
+    """Data do commit (dd/mm/aaaa) pelo Git; None se o histórico não estiver disponível."""
+    try:
+        return subprocess.run(["git", "show", "-s", "--format=%cd", "--date=format:%d/%m/%Y", h], cwd=RAIZ,
+                              capture_output=True, text=True, check=True).stdout.strip() or None
+    except (OSError, subprocess.CalledProcessError):
+        return None
+
+
+def secao_validacao(regiao):
+    """(texto de abertura, conteúdo) da seção, ou None se a validação ainda não foi feita."""
+    if not (ARQ_PREVISAO_2025.exists() and ARQ_VALIDACAO_2025.exists()):
+        print("Aviso: previsao_2025.json ou validacao_2025.json não encontrado; seção de 2025 omitida.")
+        return None
+    prev = json.loads(ARQ_PREVISAO_2025.read_text(encoding="utf-8"))
+    val = json.loads(ARQ_VALIDACAO_2025.read_text(encoding="utf-8"))
+    t = val["nota_final_por_uf"]["principal"]
+    mae_c, mae_a = t["C"]["MAE"], t["A"]["MAE"]
+    erros = pd.DataFrame(val["erros_por_uf"]).T
+    real, n = erros["real"].astype(float), erros["n"].astype(float)
+    prevista = pd.Series({u: v["C"] for u, v in prev["por_uf"].items()}).reindex(real.index).astype(float)
+    assert ((prevista - real) - erros["C"].astype(float)).abs().max() < 1e-6, "previsão e validação não batem"
+    g = pd.DataFrame({"previsto": prevista, "real": real, "erro": prevista - real, "n": n})
+
+    h = val["previsao_commit"]
+    data = _data_commit(h)
+    dek = ("O modelo de 2023 previu às cegas a nota média de cada UF no ENEM 2025, a partir só do perfil dos inscritos "
+           "de 2025. A previsão foi gravada no GitHub antes de as notas de 2025 serem abertas: commit "
+           f'<a href="{REPO}/commit/{h}"><code>{h[:7]}</code></a>' + (f", de {data}" if data else "") + ".")
+    if mae_c < mae_a:
+        titulo = (f"O modelo errou {_num(mae_c)} pontos por UF em média, menos que os {_num(mae_a)} de repetir as médias "
+                  "de 2023")
+    else:
+        titulo = (f"O modelo errou {_num(mae_c)} pontos por UF em média, sem superar os {_num(mae_a)} de repetir as médias "
+                  "de 2023")
+    sub = (f"Cada ponto é uma UF: nota final média prevista pelo modelo congelado e média real de 2025, com "
+           f"{_br(val['alunos_real'], 0)} alunos. Abaixo da diagonal, a UF ficou abaixo do previsto. Cor e símbolo "
+           "indicam a região.")
+    conteudo = _figura(titulo, sub, _assinatura(grafico_previsto_real(g, regiao, rotulo_n="Alunos em 2025")).to_html(
+        full_html=False, include_plotlyjs=False, config=CFG))
+
+    red = val["diferenca_nacional_por_prova"]["NU_NOTA_REDACAO"]
+    total = sum(d["contribuicao_nota_final"] for d in val["diferenca_nacional_por_prova"].values())
+    parte = red["contribuicao_nota_final"] / total
+    sentido_red, sentido_tot = ("caiu", "queda") if red["diferenca"] < 0 else ("subiu", "alta")
+    frase = (f"A redação {sentido_red} {_num(abs(red['diferenca']))} pontos de 2023 para 2025 e "
+             + (f"explica a maior parte da {sentido_tot} da nota final média ({_br(parte * 100, 0)}%)" if parte > 0.5 else
+                f"explica {_br(parte * 100, 0)}% da {sentido_tot} da nota final média")
+             + ". A causa (mudança na prova ou na correção) é uma hipótese não verificada.")
+    return dek, conteudo + f'<p class="obs">{frase}</p>'
+
+
+# --------------------------------------------------------------------------
 # Página
 # --------------------------------------------------------------------------
 def _figura(titulo, sub, div, classe=""):
@@ -863,11 +923,11 @@ def html_kpis(df_kpis):
 
 CSS = """
 :root{--papel:#fcfcfb;--tinta:#0b0b0b;--suave:#52514e;--linha:#e1e0d9;--linha-f:#c3c2b7;--foco:#2a78d6;
---c-azul:#2f62b0;--c-amarelo:#f2c12e;--c-branco:#ffffff;--c-rosa:#e48bb1;--c-cinza:#9a9d9f;--marca:#0b0b0b;
+--c-azul:#2f62b0;--c-amarelo:#f2c12e;--c-branco:#ffffff;--c-rosa:#e48bb1;--c-cinza:#9a9d9f;--c-verde:#1baf7a;--marca:#0b0b0b;
 --f-tit:Lato,system-ui,sans-serif;--f-txt:Lato,system-ui,sans-serif;color-scheme:light}
 @media (prefers-color-scheme:dark){:root{--papel:#1a1a19;--tinta:#f0efec;--suave:#c3c2b7;--linha:#2c2c2a;
 --linha-f:#47463f;--foco:#86b6ef;--c-azul:#4f82cf;--c-amarelo:#e0b12a;--c-branco:#1a1a19;--c-rosa:#d47ba1;
---c-cinza:#7d8083;--marca:#f0efec;color-scheme:dark}}
+--c-cinza:#7d8083;--c-verde:#199e70;--marca:#f0efec;color-scheme:dark}}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
@@ -885,6 +945,7 @@ border:1.5px solid var(--tinta);font:700 .8rem/1 var(--f-tit);color:var(--tinta)
 .bola[data-c=azul]{background:var(--c-azul);color:#fff}.bola[data-c=amarelo]{background:var(--c-amarelo)}
 .bola[data-c=branco]{background:var(--c-branco);border-color:var(--tinta);color:var(--tinta)}
 .bola[data-c=rosa]{background:var(--c-rosa)}.bola[data-c=cinza]{background:var(--c-cinza)}
+.bola[data-c=verde]{background:var(--c-verde)}
 .bola-g{width:2.4rem;height:2.4rem;font-size:1.05rem;font-weight:700}
 
 /* menu fixo */
@@ -939,6 +1000,7 @@ letter-spacing:-.01em;margin:14px 0 8px;font-variant-numeric:lining-nums proport
 .graf figcaption{max-width:70ch}
 .graf h3{font-size:1.36rem;line-height:1.25;font-weight:700;margin:0 0 6px;text-wrap:balance}
 .graf figcaption p{margin:0 0 10px;font-size:.95rem;color:var(--suave)}
+.secao>p.obs{max-width:70ch;margin:0 0 36px;font-size:.95rem;color:var(--suave)}
 .plot{min-width:0}
 .plot,.plot .js-plotly-plot,.plot .js-plotly-plot *{touch-action:pan-y;-webkit-tap-highlight-color:transparent}
 /* filtros do mapa */
@@ -977,10 +1039,11 @@ border-bottom:2px solid var(--suave);transform:rotate(45deg) translateY(-3px)}
 footer{padding:40px 0 56px;color:var(--suave);font-size:.92rem}
 footer p{max-width:72ch;margin:0 0 10px}
 
-/* menu: com os rótulos (Lato), os itens precisam de ~560 px (~770 px com a marca); entre 881 e 1000 px o espaçamento
-   aperta, e até 880 px ficam só as bolinhas numeradas (o rótulo continua para leitores de tela) */
+/* menu: com os seis rótulos (Lato) e o espaçamento apertado, os itens precisam de ~700 px (~900 px com a marca);
+   entre 941 e 1000 px o espaçamento aperta, e até 940 px ficam só as bolinhas numeradas (o rótulo continua para
+   leitores de tela) */
 @media (max-width:1000px){.menu .w{gap:16px}.menu ol{gap:0}.menu a.it{padding:6px 7px;gap:6px}}
-@media (max-width:880px){.menu .rot{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:940px){.menu .rot{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .menu a.it{padding:6px 8px}}
 @media (max-width:860px){.gabarito{grid-template-columns:repeat(2,minmax(0,1fr))}
 .gabarito li:nth-child(3){padding-left:0;border-left:0}
@@ -1315,6 +1378,10 @@ def main():
     else:
         print(f"Aviso: {arq_res.relative_to(RAIZ)} não encontrado; a seção de modelos foi omitida "
               "(rode o notebook da Entrega 2 para gerá-lo).")
+
+    sec_2025 = secao_validacao(aux["tab_uf"]["REGIAO"])
+    if sec_2025:
+        secoes.append(("validacao", len(secoes) + 1, "verde", "Validação 2025", "Expectativa × realidade: 2025", *sec_2025))
 
     secoes.append(("indicadores", len(secoes) + 1, "cinza", "Indicadores", "Os 20 indicadores",
                    "Os KPIs do projeto, em quatro eixos, com os mesmos valores dos notebooks.", html_kpis(df_kpis)))
