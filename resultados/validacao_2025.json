@@ -1,0 +1,726 @@
+{
+  "previsao_commit": "3eee3c2576d8ff0d53dfd65ee3b6dff7ceb69da1",
+  "universo_real": "RESULTADOS 2025, escola de conclusão preenchida, presentes nas quatro provas objetivas e com as cinco notas",
+  "alunos_real": 1288485,
+  "presentes_sem_alguma_nota": 0,
+  "nota_final_por_uf": {
+    "principal": {
+      "A": {
+        "UFs": 27,
+        "MAE": 12.982732,
+        "MAE_ponderado": 12.722326,
+        "RMSE": 14.73611,
+        "RMSE_ponderado": 14.315127,
+        "vies": 12.982732,
+        "vies_ponderado": 12.722326,
+        "pearson": 0.956067,
+        "spearman": 0.916972
+      },
+      "B": {
+        "UFs": 27,
+        "MAE": 12.851689,
+        "MAE_ponderado": 12.336533,
+        "RMSE": 16.207933,
+        "RMSE_ponderado": 14.891958,
+        "vies": 12.075926,
+        "vies_ponderado": 11.933891,
+        "pearson": 0.886011,
+        "spearman": 0.844322
+      },
+      "C": {
+        "UFs": 27,
+        "MAE": 10.655318,
+        "MAE_ponderado": 9.433011,
+        "RMSE": 13.182395,
+        "RMSE_ponderado": 11.470909,
+        "vies": 9.412477,
+        "vies_ponderado": 8.158863,
+        "pearson": 0.925283,
+        "spearman": 0.90293
+      },
+      "C_mista_privada": {
+        "UFs": 27,
+        "MAE": 12.330067,
+        "MAE_ponderado": 11.075896,
+        "RMSE": 14.867793,
+        "RMSE_ponderado": 13.267336,
+        "vies": 11.706138,
+        "vies_ponderado": 10.522035,
+        "pearson": 0.924932,
+        "spearman": 0.904762
+      },
+      "C_internet_em_branco": {
+        "UFs": 27,
+        "MAE": 11.790094,
+        "MAE_ponderado": 10.339563,
+        "RMSE": 14.482258,
+        "RMSE_ponderado": 12.648497,
+        "vies": 10.846611,
+        "vies_ponderado": 9.364905,
+        "pearson": 0.923586,
+        "spearman": 0.904151
+      },
+      "C_presenca_calibrada": {
+        "UFs": 27,
+        "MAE": 11.028588,
+        "MAE_ponderado": 9.665245,
+        "RMSE": 13.652407,
+        "RMSE_ponderado": 11.754924,
+        "vies": 9.162999,
+        "vies_ponderado": 8.161202,
+        "pearson": 0.905425,
+        "spearman": 0.87851
+      }
+    },
+    "sem_ufs_acima_de_5pct": {
+      "A": {
+        "UFs": 16,
+        "MAE": 12.584441,
+        "MAE_ponderado": 13.051103,
+        "RMSE": 13.616458,
+        "RMSE_ponderado": 14.492053,
+        "vies": 12.584441,
+        "vies_ponderado": 13.051103,
+        "pearson": 0.974594,
+        "spearman": 0.929412
+      },
+      "B": {
+        "UFs": 16,
+        "MAE": 9.447753,
+        "MAE_ponderado": 10.594757,
+        "RMSE": 11.921731,
+        "RMSE_ponderado": 12.697322,
+        "vies": 8.628137,
+        "vies_ponderado": 10.192144,
+        "pearson": 0.939342,
+        "spearman": 0.914706
+      },
+      "C": {
+        "UFs": 16,
+        "MAE": 8.124236,
+        "MAE_ponderado": 7.647115,
+        "RMSE": 9.563687,
+        "RMSE_ponderado": 8.748509,
+        "vies": 6.026943,
+        "vies_ponderado": 5.769613,
+        "pearson": 0.963299,
+        "spearman": 0.944118
+      },
+      "C_mista_privada": {
+        "UFs": 16,
+        "MAE": 9.293221,
+        "MAE_ponderado": 8.868115,
+        "RMSE": 11.089002,
+        "RMSE_ponderado": 10.45885,
+        "vies": 8.24034,
+        "vies_ponderado": 8.051982,
+        "pearson": 0.962495,
+        "spearman": 0.944118
+      },
+      "C_internet_em_branco": {
+        "UFs": 16,
+        "MAE": 9.124981,
+        "MAE_ponderado": 8.335301,
+        "RMSE": 10.996633,
+        "RMSE_ponderado": 9.840064,
+        "vies": 7.532854,
+        "vies_ponderado": 6.899109,
+        "pearson": 0.961443,
+        "spearman": 0.941176
+      },
+      "C_presenca_calibrada": {
+        "UFs": 16,
+        "MAE": 8.478476,
+        "MAE_ponderado": 8.157608,
+        "RMSE": 10.214844,
+        "RMSE_ponderado": 9.506547,
+        "vies": 5.934291,
+        "vies_ponderado": 6.176654,
+        "pearson": 0.943038,
+        "spearman": 0.920588
+      }
+    },
+    "realidade_menos_vies_universo": {
+      "A": {
+        "UFs": 27,
+        "MAE": 14.3444,
+        "MAE_ponderado": 13.971892,
+        "RMSE": 16.055319,
+        "RMSE_ponderado": 15.561964,
+        "vies": 14.3444,
+        "vies_ponderado": 13.971892,
+        "pearson": 0.952252,
+        "spearman": 0.913919
+      },
+      "B": {
+        "UFs": 27,
+        "MAE": 13.920611,
+        "MAE_ponderado": 13.44216,
+        "RMSE": 17.393285,
+        "RMSE_ponderado": 16.055892,
+        "vies": 13.437593,
+        "vies_ponderado": 13.183457,
+        "pearson": 0.879785,
+        "spearman": 0.832723
+      },
+      "C": {
+        "UFs": 27,
+        "MAE": 11.689173,
+        "MAE_ponderado": 10.278133,
+        "RMSE": 14.348853,
+        "RMSE_ponderado": 12.539475,
+        "vies": 10.774145,
+        "vies_ponderado": 9.408428,
+        "pearson": 0.919502,
+        "spearman": 0.896215
+      },
+      "C_mista_privada": {
+        "UFs": 27,
+        "MAE": 13.467434,
+        "MAE_ponderado": 12.01593,
+        "RMSE": 16.11324,
+        "RMSE_ponderado": 14.417448,
+        "vies": 13.067806,
+        "vies_ponderado": 11.771601,
+        "pearson": 0.918977,
+        "spearman": 0.898046
+      },
+      "C_internet_em_branco": {
+        "UFs": 27,
+        "MAE": 12.863916,
+        "MAE_ponderado": 11.212193,
+        "RMSE": 15.669427,
+        "RMSE_ponderado": 13.73294,
+        "vies": 12.208279,
+        "vies_ponderado": 10.614471,
+        "pearson": 0.917778,
+        "spearman": 0.896215
+      },
+      "C_presenca_calibrada": {
+        "UFs": 27,
+        "MAE": 11.873144,
+        "MAE_ponderado": 10.430644,
+        "RMSE": 14.725611,
+        "RMSE_ponderado": 12.775013,
+        "vies": 10.524667,
+        "vies_ponderado": 9.410767,
+        "pearson": 0.900762,
+        "spearman": 0.874847
+      }
+    }
+  },
+  "bootstrap_A_vs_C": {
+    "MAE_A_menos_MAE_C": 2.327414,
+    "IC95": [
+      -0.366959,
+      5.039904
+    ],
+    "prop_C_melhor": 0.9522,
+    "reamostragens": 5000
+  },
+  "mudanca_de_perfil": {
+    "MAE_B": 12.851689,
+    "MAE_C": 10.655318,
+    "reducao_MAE": 0.170901,
+    "reducao_SSE": 0.338495,
+    "corr_mudanca_perfil_x_desvio_de_B": 0.530393,
+    "nacional": {
+      "real": 524.114692,
+      "B": 536.166581,
+      "C": 532.481314,
+      "real_menos_B": -12.051889,
+      "C_menos_B": -3.685267
+    }
+  },
+  "erros_por_uf": {
+    "AC": {
+      "real": 499.210806,
+      "n": 6739,
+      "A": 10.907494,
+      "B": 13.900399,
+      "C": 7.108498,
+      "C_mista_privada": 9.056102,
+      "C_internet_em_branco": 10.697275,
+      "C_presenca_calibrada": 7.369529,
+      "REGIAO": "Norte"
+    },
+    "AL": {
+      "real": 483.41687,
+      "n": 26450,
+      "A": 28.632267,
+      "B": 30.863502,
+      "C": 31.498489,
+      "C_mista_privada": 33.275216,
+      "C_internet_em_branco": 33.114414,
+      "C_presenca_calibrada": 30.141314,
+      "REGIAO": "Nordeste"
+    },
+    "AM": {
+      "real": 474.901411,
+      "n": 28793,
+      "A": 16.522378,
+      "B": 27.556891,
+      "C": 21.358179,
+      "C_mista_privada": 22.879851,
+      "C_internet_em_branco": 24.797151,
+      "C_presenca_calibrada": 23.830079,
+      "REGIAO": "Norte"
+    },
+    "AP": {
+      "real": 496.764872,
+      "n": 6888,
+      "A": 11.92112,
+      "B": 7.637052,
+      "C": 8.340299,
+      "C_mista_privada": 10.867255,
+      "C_internet_em_branco": 10.293587,
+      "C_presenca_calibrada": 4.908877,
+      "REGIAO": "Norte"
+    },
+    "BA": {
+      "real": 500.013748,
+      "n": 97228,
+      "A": 26.976609,
+      "B": 24.052453,
+      "C": 13.452258,
+      "C_mista_privada": 16.055594,
+      "C_internet_em_branco": 15.235772,
+      "C_presenca_calibrada": 14.71327,
+      "REGIAO": "Nordeste"
+    },
+    "CE": {
+      "real": 499.333645,
+      "n": 96263,
+      "A": 6.003685,
+      "B": 5.841732,
+      "C": 7.886701,
+      "C_mista_privada": 9.533976,
+      "C_internet_em_branco": 10.02856,
+      "C_presenca_calibrada": 6.051676,
+      "REGIAO": "Nordeste"
+    },
+    "DF": {
+      "real": 550.420502,
+      "n": 21291,
+      "A": 3.83804,
+      "B": -3.915874,
+      "C": 1.631314,
+      "C_mista_privada": 4.661338,
+      "C_internet_em_branco": 2.063734,
+      "C_presenca_calibrada": -4.831967,
+      "REGIAO": "Centro-Oeste"
+    },
+    "ES": {
+      "real": 541.2886,
+      "n": 24506,
+      "A": 13.226235,
+      "B": 5.685656,
+      "C": 4.914823,
+      "C_mista_privada": 6.524048,
+      "C_internet_em_branco": 5.515818,
+      "C_presenca_calibrada": 4.411817,
+      "REGIAO": "Sudeste"
+    },
+    "GO": {
+      "real": 530.10111,
+      "n": 46218,
+      "A": 4.824041,
+      "B": 0.026518,
+      "C": 1.341948,
+      "C_mista_privada": 4.235332,
+      "C_internet_em_branco": 2.112121,
+      "C_presenca_calibrada": 1.593273,
+      "REGIAO": "Centro-Oeste"
+    },
+    "MA": {
+      "real": 483.867684,
+      "n": 49167,
+      "A": 13.484006,
+      "B": 28.634428,
+      "C": 24.930014,
+      "C_mista_privada": 26.845765,
+      "C_internet_em_branco": 27.808824,
+      "C_presenca_calibrada": 25.452703,
+      "REGIAO": "Nordeste"
+    },
+    "MG": {
+      "real": 544.741827,
+      "n": 121042,
+      "A": 17.812398,
+      "B": 6.953195,
+      "C": -2.912234,
+      "C_mista_privada": -0.963166,
+      "C_internet_em_branco": -2.183576,
+      "C_presenca_calibrada": -2.321094,
+      "REGIAO": "Sudeste"
+    },
+    "MS": {
+      "real": 521.58557,
+      "n": 16295,
+      "A": 9.549346,
+      "B": 22.279705,
+      "C": 22.282413,
+      "C_mista_privada": 24.807973,
+      "C_internet_em_branco": 22.830615,
+      "C_presenca_calibrada": 21.281525,
+      "REGIAO": "Centro-Oeste"
+    },
+    "MT": {
+      "real": 513.741587,
+      "n": 20024,
+      "A": 10.533701,
+      "B": 27.668684,
+      "C": 20.031563,
+      "C_mista_privada": 22.757306,
+      "C_internet_em_branco": 20.979681,
+      "C_presenca_calibrada": 22.713847,
+      "REGIAO": "Centro-Oeste"
+    },
+    "PA": {
+      "real": 492.059282,
+      "n": 57236,
+      "A": 19.71209,
+      "B": 18.793168,
+      "C": 13.157403,
+      "C_mista_privada": 15.189573,
+      "C_internet_em_branco": 15.854934,
+      "C_presenca_calibrada": 11.812899,
+      "REGIAO": "Norte"
+    },
+    "PB": {
+      "real": 517.835679,
+      "n": 31285,
+      "A": 9.099739,
+      "B": -0.513081,
+      "C": -2.442795,
+      "C_mista_privada": -0.120113,
+      "C_internet_em_branco": -0.78012,
+      "C_presenca_calibrada": -3.715307,
+      "REGIAO": "Nordeste"
+    },
+    "PE": {
+      "real": 512.734681,
+      "n": 69647,
+      "A": 15.841015,
+      "B": 8.374805,
+      "C": 7.659369,
+      "C_mista_privada": 10.546448,
+      "C_internet_em_branco": 9.004479,
+      "C_presenca_calibrada": 7.497438,
+      "REGIAO": "Nordeste"
+    },
+    "PI": {
+      "real": 505.794409,
+      "n": 29750,
+      "A": 9.528956,
+      "B": 3.265297,
+      "C": 3.887377,
+      "C_mista_privada": 5.911527,
+      "C_internet_em_branco": 6.065904,
+      "C_presenca_calibrada": 2.301645,
+      "REGIAO": "Nordeste"
+    },
+    "PR": {
+      "real": 537.832812,
+      "n": 64520,
+      "A": 3.928317,
+      "B": 12.682848,
+      "C": 10.783013,
+      "C_mista_privada": 13.274048,
+      "C_internet_em_branco": 11.127059,
+      "C_presenca_calibrada": 11.235391,
+      "REGIAO": "Sul"
+    },
+    "RJ": {
+      "real": 541.520387,
+      "n": 80470,
+      "A": 14.189123,
+      "B": 16.5501,
+      "C": 11.676693,
+      "C_mista_privada": 15.059473,
+      "C_internet_em_branco": 12.474013,
+      "C_presenca_calibrada": 9.543321,
+      "REGIAO": "Sudeste"
+    },
+    "RN": {
+      "real": 529.878598,
+      "n": 26469,
+      "A": 11.774443,
+      "B": -6.043847,
+      "C": -7.154565,
+      "C_mista_privada": -5.387634,
+      "C_internet_em_branco": -6.041053,
+      "C_presenca_calibrada": -10.156434,
+      "REGIAO": "Nordeste"
+    },
+    "RO": {
+      "real": 504.865112,
+      "n": 14011,
+      "A": 8.906761,
+      "B": 7.387346,
+      "C": 11.827928,
+      "C_mista_privada": 13.699354,
+      "C_internet_em_branco": 12.585988,
+      "C_presenca_calibrada": 13.264133,
+      "REGIAO": "Norte"
+    },
+    "RR": {
+      "real": 495.223779,
+      "n": 2646,
+      "A": 30.962818,
+      "B": 31.151419,
+      "C": 16.485582,
+      "C_mista_privada": 18.202738,
+      "C_internet_em_branco": 17.901544,
+      "C_presenca_calibrada": 21.208366,
+      "REGIAO": "Norte"
+    },
+    "RS": {
+      "real": 549.22813,
+      "n": 48088,
+      "A": 7.940409,
+      "B": 2.04226,
+      "C": -4.053646,
+      "C_mista_privada": -1.952136,
+      "C_internet_em_branco": -3.71858,
+      "C_presenca_calibrada": -4.160646,
+      "REGIAO": "Sul"
+    },
+    "SC": {
+      "real": 552.078167,
+      "n": 35467,
+      "A": 5.154553,
+      "B": 1.902142,
+      "C": -0.215106,
+      "C_mista_privada": 2.591002,
+      "C_internet_em_branco": -0.013695,
+      "C_presenca_calibrada": 1.600286,
+      "REGIAO": "Sul"
+    },
+    "SE": {
+      "real": 509.521801,
+      "n": 18694,
+      "A": 15.893709,
+      "B": 6.515805,
+      "C": 8.076565,
+      "C_mista_privada": 11.416735,
+      "C_internet_em_branco": 10.375125,
+      "C_presenca_calibrada": 6.391777,
+      "REGIAO": "Nordeste"
+    },
+    "SP": {
+      "real": 547.793432,
+      "n": 239706,
+      "A": 9.514547,
+      "B": 13.192162,
+      "C": 8.218665,
+      "C_mista_privada": 10.744852,
+      "C_internet_em_branco": 8.635383,
+      "C_presenca_calibrada": 9.776262,
+      "REGIAO": "Sudeste"
+    },
+    "TO": {
+      "real": 495.537621,
+      "n": 9592,
+      "A": 13.855966,
+      "B": 13.565226,
+      "C": 14.366144,
+      "C_mista_privada": 16.353266,
+      "C_internet_em_branco": 16.093542,
+      "C_presenca_calibrada": 15.486988,
+      "REGIAO": "Norte"
+    }
+  },
+  "erro_medio_por_regiao": {
+    "Centro-Oeste": {
+      "A": 7.186282,
+      "B": 11.514758,
+      "C": 11.32181,
+      "UFs": 4
+    },
+    "Nordeste": {
+      "A": 15.24827,
+      "B": 11.221233,
+      "C": 9.754824,
+      "UFs": 9
+    },
+    "Norte": {
+      "A": 16.112661,
+      "B": 17.141643,
+      "C": 13.234862,
+      "UFs": 7
+    },
+    "Sudeste": {
+      "A": 13.685576,
+      "B": 10.595278,
+      "C": 5.474487,
+      "UFs": 4
+    },
+    "Sul": {
+      "A": 5.674426,
+      "B": 5.542417,
+      "C": 2.17142,
+      "UFs": 3
+    }
+  },
+  "uf_x_escola": {
+    "A": {
+      "UFs": 54,
+      "MAE": 9.927108,
+      "MAE_ponderado": 11.24058,
+      "RMSE": 11.838563,
+      "RMSE_ponderado": 12.884117,
+      "vies": 9.583637,
+      "vies_ponderado": 11.176348,
+      "pearson": 0.993817,
+      "spearman": 0.970421
+    },
+    "B": {
+      "UFs": 54,
+      "MAE": 12.863271,
+      "MAE_ponderado": 12.289231,
+      "RMSE": 16.542612,
+      "RMSE_ponderado": 14.67664,
+      "vies": 8.343225,
+      "vies_ponderado": 10.677559,
+      "pearson": 0.96814,
+      "spearman": 0.885268
+    },
+    "C": {
+      "UFs": 54,
+      "MAE": 11.871875,
+      "MAE_ponderado": 10.656432,
+      "RMSE": 14.463846,
+      "RMSE_ponderado": 12.913927,
+      "vies": 7.854942,
+      "vies_ponderado": 8.910026,
+      "pearson": 0.976818,
+      "spearman": 0.893044
+    }
+  },
+  "provas_regua_A": {
+    "Ciências da Natureza": {
+      "UFs": 27,
+      "MAE": 4.536965,
+      "MAE_ponderado": 4.003157,
+      "RMSE": 5.555069,
+      "RMSE_ponderado": 5.189091,
+      "vies": -3.200404,
+      "vies_ponderado": -2.377482,
+      "pearson": 0.957509,
+      "spearman": 0.947497
+    },
+    "Ciências Humanas": {
+      "UFs": 27,
+      "MAE": 12.886194,
+      "MAE_ponderado": 13.400944,
+      "RMSE": 13.719279,
+      "RMSE_ponderado": 14.292122,
+      "vies": 12.886194,
+      "vies_ponderado": 13.400944,
+      "pearson": 0.966509,
+      "spearman": 0.95116
+    },
+    "Linguagens": {
+      "UFs": 27,
+      "MAE": 11.629503,
+      "MAE_ponderado": 11.922056,
+      "RMSE": 12.37595,
+      "RMSE_ponderado": 12.695878,
+      "vies": -11.156771,
+      "vies_ponderado": -11.895845,
+      "pearson": 0.9646,
+      "spearman": 0.952381
+    },
+    "Matemática": {
+      "UFs": 27,
+      "MAE": 17.07993,
+      "MAE_ponderado": 16.759049,
+      "RMSE": 18.690105,
+      "RMSE_ponderado": 18.277637,
+      "vies": 17.07993,
+      "vies_ponderado": 16.759049,
+      "pearson": 0.969326,
+      "spearman": 0.93956
+    }
+  },
+  "redacao_regua_A": {
+    "UFs": 27,
+    "MAE": 49.30471,
+    "MAE_ponderado": 47.724964,
+    "RMSE": 52.499328,
+    "RMSE_ponderado": 50.580384,
+    "vies": 49.30471,
+    "vies_ponderado": 47.724964,
+    "pearson": 0.873408,
+    "spearman": 0.882784
+  },
+  "diferenca_nacional_por_prova": {
+    "NU_NOTA_CN": {
+      "real_2025": 491.727468,
+      "A_2023": 489.349986,
+      "diferenca": 2.377482,
+      "contribuicao_nota_final": 0.475496
+    },
+    "NU_NOTA_CH": {
+      "real_2025": 505.44087,
+      "A_2023": 518.841814,
+      "diferenca": -13.400944,
+      "contribuicao_nota_final": -2.680189
+    },
+    "NU_NOTA_LC": {
+      "real_2025": 526.620312,
+      "A_2023": 514.724468,
+      "diferenca": 11.895845,
+      "contribuicao_nota_final": 2.379169
+    },
+    "NU_NOTA_MT": {
+      "real_2025": 514.040842,
+      "A_2023": 530.799891,
+      "diferenca": -16.759049,
+      "contribuicao_nota_final": -3.35181
+    },
+    "NU_NOTA_REDACAO": {
+      "real_2025": 582.743967,
+      "A_2023": 630.468931,
+      "diferenca": -47.724964,
+      "contribuicao_nota_final": -9.544993
+    }
+  },
+  "padrao_dos_erros": {
+    "corr_erro_C_x_media_real": -0.659436,
+    "corr_erro_A_x_media_real": -0.524793
+  },
+  "C_erra_menos_que_A": {
+    "principal": {
+      "B": true,
+      "C": true,
+      "C_mista_privada": true,
+      "C_internet_em_branco": true,
+      "C_presenca_calibrada": true
+    },
+    "sem_ufs_acima_de_5pct": {
+      "B": true,
+      "C": true,
+      "C_mista_privada": true,
+      "C_internet_em_branco": true,
+      "C_presenca_calibrada": true
+    },
+    "realidade_menos_vies_universo": {
+      "B": true,
+      "C": true,
+      "C_mista_privada": true,
+      "C_internet_em_branco": true,
+      "C_presenca_calibrada": true
+    }
+  },
+  "nacional": {
+    "real": 524.114692,
+    "A": 536.913951,
+    "B": 536.166581,
+    "C": 532.481314,
+    "C_mista_privada": 534.886259,
+    "C_internet_em_branco": 533.626278,
+    "C_presenca_calibrada": 532.167053
+  }
+}
