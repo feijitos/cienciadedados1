@@ -1,0 +1,348 @@
+{
+  "fonte": "INEP - Microdados do ENEM 2025",
+  "url": "https://download.inep.gov.br/microdados/microdados_enem_2025.zip",
+  "zip_bytes": 1035674693,
+  "zip_sha256": "b8d3e72cbf387ee08f18d552367005429017d43eea1f6d4b9bafe1d83a116071",
+  "seed": 42,
+  "fracao_por_uf": 0.04,
+  "funil": {
+    "linhas_lidas": 4810772,
+    "concluintes_2025": 1811344,
+    "nao_treineiros": 1811344,
+    "q023_respondida": 1811344,
+    "escola_informada_q023_A_a_E": 1810641
+  },
+  "q023_concluintes_nao_treineiros": {
+    "A": 1455957,
+    "B": 58124,
+    "C": 28491,
+    "D": 211093,
+    "E": 56976,
+    "F": 703
+  },
+  "linhas_amostra": 72425,
+  "universo_por_uf": {
+    "AC": 10057,
+    "AL": 36532,
+    "AM": 49994,
+    "AP": 9064,
+    "BA": 138622,
+    "CE": 118490,
+    "DF": 27048,
+    "ES": 33798,
+    "GO": 72648,
+    "MA": 69791,
+    "MG": 175008,
+    "MS": 22681,
+    "MT": 34532,
+    "PA": 83561,
+    "PB": 40906,
+    "PE": 89935,
+    "PI": 38979,
+    "PR": 92085,
+    "RJ": 108170,
+    "RN": 31426,
+    "RO": 21063,
+    "RR": 4937,
+    "RS": 67441,
+    "SC": 51370,
+    "SE": 23016,
+    "SP": 345137,
+    "TO": 14350
+  },
+  "amostra_por_uf": {
+    "AC": 402,
+    "AL": 1461,
+    "AM": 2000,
+    "AP": 363,
+    "BA": 5545,
+    "CE": 4740,
+    "DF": 1082,
+    "ES": 1352,
+    "GO": 2906,
+    "MA": 2792,
+    "MG": 7000,
+    "MS": 907,
+    "MT": 1381,
+    "PA": 3342,
+    "PB": 1636,
+    "PE": 3597,
+    "PI": 1559,
+    "PR": 3683,
+    "RJ": 4327,
+    "RN": 1257,
+    "RO": 843,
+    "RR": 197,
+    "RS": 2698,
+    "SC": 2055,
+    "SE": 921,
+    "SP": 13805,
+    "TO": 574
+  },
+  "asserts": "Q006 só A/B; Q007 só A-Q e com mais de 2 letras; demais colunas dentro do dicionário",
+  "conferencia_universo": {
+    "criterio": "diferença de até 5% por UF entre o universo de PARTICIPANTES e o de RESULTADOS",
+    "aceita": false,
+    "ufs_acima_do_limite": [
+      "AL",
+      "DF",
+      "GO",
+      "MA",
+      "MS",
+      "MT",
+      "PA",
+      "PI",
+      "PR",
+      "RJ",
+      "RR"
+    ],
+    "resultados_total_linhas": 4810772,
+    "por_uf": {
+      "AC": {
+        "participantes": 10057,
+        "resultados": 9642,
+        "diferenca": -0.041265,
+        "mista": 240,
+        "mista_pct": 0.023864,
+        "resultados_publica": 9090,
+        "resultados_privada": 552
+      },
+      "AL": {
+        "participantes": 36532,
+        "resultados": 32527,
+        "diferenca": -0.10963,
+        "mista": 1533,
+        "mista_pct": 0.041963,
+        "resultados_publica": 28435,
+        "resultados_privada": 4092
+      },
+      "AM": {
+        "participantes": 49994,
+        "resultados": 48966,
+        "diferenca": -0.020562,
+        "mista": 1350,
+        "mista_pct": 0.027003,
+        "resultados_publica": 46586,
+        "resultados_privada": 2380
+      },
+      "AP": {
+        "participantes": 9064,
+        "resultados": 8665,
+        "diferenca": -0.04402,
+        "mista": 295,
+        "mista_pct": 0.032546,
+        "resultados_publica": 7843,
+        "resultados_privada": 822
+      },
+      "BA": {
+        "participantes": 138622,
+        "resultados": 133968,
+        "diferenca": -0.033573,
+        "mista": 6905,
+        "mista_pct": 0.049812,
+        "resultados_publica": 119152,
+        "resultados_privada": 14816
+      },
+      "CE": {
+        "participantes": 118490,
+        "resultados": 114807,
+        "diferenca": -0.031083,
+        "mista": 3638,
+        "mista_pct": 0.030703,
+        "resultados_publica": 106228,
+        "resultados_privada": 8579
+      },
+      "DF": {
+        "participantes": 27048,
+        "resultados": 25473,
+        "diferenca": -0.05823,
+        "mista": 1595,
+        "mista_pct": 0.058969,
+        "resultados_publica": 18673,
+        "resultados_privada": 6800
+      },
+      "ES": {
+        "participantes": 33798,
+        "resultados": 32791,
+        "diferenca": -0.029795,
+        "mista": 1234,
+        "mista_pct": 0.036511,
+        "resultados_publica": 28307,
+        "resultados_privada": 4484
+      },
+      "GO": {
+        "participantes": 72648,
+        "resultados": 67427,
+        "diferenca": -0.071867,
+        "mista": 4282,
+        "mista_pct": 0.058942,
+        "resultados_publica": 59394,
+        "resultados_privada": 8033
+      },
+      "MA": {
+        "participantes": 69791,
+        "resultados": 65792,
+        "diferenca": -0.0573,
+        "mista": 2406,
+        "mista_pct": 0.034474,
+        "resultados_publica": 61000,
+        "resultados_privada": 4792
+      },
+      "MG": {
+        "participantes": 175008,
+        "resultados": 170828,
+        "diferenca": -0.023885,
+        "mista": 6877,
+        "mista_pct": 0.039295,
+        "resultados_publica": 146555,
+        "resultados_privada": 24273
+      },
+      "MS": {
+        "participantes": 22681,
+        "resultados": 21478,
+        "diferenca": -0.05304,
+        "mista": 1097,
+        "mista_pct": 0.048366,
+        "resultados_publica": 18643,
+        "resultados_privada": 2835
+      },
+      "MT": {
+        "participantes": 34532,
+        "resultados": 32671,
+        "diferenca": -0.053892,
+        "mista": 1751,
+        "mista_pct": 0.050707,
+        "resultados_publica": 28991,
+        "resultados_privada": 3680
+      },
+      "PA": {
+        "participantes": 83561,
+        "resultados": 76543,
+        "diferenca": -0.083987,
+        "mista": 3146,
+        "mista_pct": 0.037649,
+        "resultados_publica": 68238,
+        "resultados_privada": 8305
+      },
+      "PB": {
+        "participantes": 40906,
+        "resultados": 39251,
+        "diferenca": -0.040459,
+        "mista": 1833,
+        "mista_pct": 0.04481,
+        "resultados_publica": 33421,
+        "resultados_privada": 5830
+      },
+      "PE": {
+        "participantes": 89935,
+        "resultados": 87835,
+        "diferenca": -0.02335,
+        "mista": 4914,
+        "mista_pct": 0.054639,
+        "resultados_publica": 77041,
+        "resultados_privada": 10794
+      },
+      "PI": {
+        "participantes": 38979,
+        "resultados": 36876,
+        "diferenca": -0.053952,
+        "mista": 1340,
+        "mista_pct": 0.034377,
+        "resultados_publica": 33228,
+        "resultados_privada": 3648
+      },
+      "PR": {
+        "participantes": 92085,
+        "resultados": 86784,
+        "diferenca": -0.057566,
+        "mista": 4774,
+        "mista_pct": 0.051843,
+        "resultados_publica": 70122,
+        "resultados_privada": 16662
+      },
+      "RJ": {
+        "participantes": 108170,
+        "resultados": 102489,
+        "diferenca": -0.052519,
+        "mista": 8463,
+        "mista_pct": 0.078238,
+        "resultados_publica": 73653,
+        "resultados_privada": 28836
+      },
+      "RN": {
+        "participantes": 31426,
+        "resultados": 31021,
+        "diferenca": -0.012887,
+        "mista": 1343,
+        "mista_pct": 0.042735,
+        "resultados_publica": 26590,
+        "resultados_privada": 4431
+      },
+      "RO": {
+        "participantes": 21063,
+        "resultados": 20612,
+        "diferenca": -0.021412,
+        "mista": 910,
+        "mista_pct": 0.043204,
+        "resultados_publica": 19114,
+        "resultados_privada": 1498
+      },
+      "RR": {
+        "participantes": 4937,
+        "resultados": 4571,
+        "diferenca": -0.074134,
+        "mista": 174,
+        "mista_pct": 0.035244,
+        "resultados_publica": 4213,
+        "resultados_privada": 358
+      },
+      "RS": {
+        "participantes": 67441,
+        "resultados": 64948,
+        "diferenca": -0.036966,
+        "mista": 3096,
+        "mista_pct": 0.045907,
+        "resultados_publica": 53731,
+        "resultados_privada": 11217
+      },
+      "SC": {
+        "participantes": 51370,
+        "resultados": 50591,
+        "diferenca": -0.015164,
+        "mista": 2876,
+        "mista_pct": 0.055986,
+        "resultados_publica": 40033,
+        "resultados_privada": 10558
+      },
+      "SE": {
+        "participantes": 23016,
+        "resultados": 22498,
+        "diferenca": -0.022506,
+        "mista": 1290,
+        "mista_pct": 0.056048,
+        "resultados_publica": 19339,
+        "resultados_privada": 3159
+      },
+      "SP": {
+        "participantes": 345137,
+        "resultados": 335937,
+        "diferenca": -0.026656,
+        "mista": 18651,
+        "mista_pct": 0.054039,
+        "resultados_publica": 255625,
+        "resultados_privada": 80312
+      },
+      "TO": {
+        "participantes": 14350,
+        "resultados": 14037,
+        "diferenca": -0.021812,
+        "mista": 602,
+        "mista_pct": 0.041951,
+        "resultados_publica": 12984,
+        "resultados_privada": 1053
+      }
+    },
+    "mista_total_pct": 0.047837,
+    "mista_acima_de_10pct": false
+  }
+}
