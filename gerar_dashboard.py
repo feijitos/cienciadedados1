@@ -30,7 +30,7 @@ from src.kpis import calcular_kpis
 
 RAIZ = Path(__file__).resolve().parent
 REPO = "https://github.com/feijitos/cienciadedados1"
-FONTE = "Schibsted Grotesk, system-ui, sans-serif"
+FONTE = "Lato, system-ui, sans-serif"
 # Sem zoom por arrasto, roda do mouse ou duplo clique: no celular o dedo tem que rolar a página.
 # O hover/toque e os menus continuam funcionando.
 CFG = {"responsive": True, "displaylogo": False, "displayModeBar": False, "scrollZoom": False,
@@ -764,7 +764,7 @@ def html_kpis(df_kpis):
 CSS = """
 :root{--papel:#fcfcfb;--tinta:#0b0b0b;--suave:#52514e;--linha:#e1e0d9;--linha-f:#c3c2b7;--foco:#2a78d6;
 --c-azul:#2f62b0;--c-amarelo:#f2c12e;--c-branco:#ffffff;--c-rosa:#e48bb1;--c-cinza:#9a9d9f;--marca:#0b0b0b;
---f-tit:"Schibsted Grotesk",system-ui,sans-serif;--f-txt:"Schibsted Grotesk",system-ui,sans-serif;color-scheme:light}
+--f-tit:Lato,system-ui,sans-serif;--f-txt:Lato,system-ui,sans-serif;color-scheme:light}
 @media (prefers-color-scheme:dark){:root{--papel:#1a1a19;--tinta:#f0efec;--suave:#c3c2b7;--linha:#2c2c2a;
 --linha-f:#47463f;--foco:#86b6ef;--c-azul:#4f82cf;--c-amarelo:#e0b12a;--c-branco:#1a1a19;--c-rosa:#d47ba1;
 --c-cinza:#7d8083;--marca:#f0efec;color-scheme:dark}}
@@ -780,7 +780,7 @@ h1,h2,h3,summary,.menu,.num{font-family:var(--f-tit)}
 
 /* bolinhas do cartão-resposta */
 .bola{display:inline-grid;place-items:center;flex:none;width:1.6em;height:1.6em;border-radius:50%;
-border:1.5px solid var(--tinta);font:600 .8rem/1 var(--f-tit);color:var(--tinta)}
+border:1.5px solid var(--tinta);font:700 .8rem/1 var(--f-tit);color:var(--tinta)}
 .bola[data-c]{border-color:transparent;color:#0b0b0b}
 .bola[data-c=azul]{background:var(--c-azul);color:#fff}.bola[data-c=amarelo]{background:var(--c-amarelo)}
 .bola[data-c=branco]{background:var(--c-branco);border-color:var(--tinta);color:var(--tinta)}
@@ -802,12 +802,13 @@ color:var(--suave);white-space:nowrap;border-radius:6px}
 /* primeira tela: só a manchete, na altura da tela menos o menu (56 px + 1 px de borda) */
 .capa{display:flex;flex-direction:column;min-height:calc(100vh - 57px);min-height:calc(100svh - 57px)}
 .capa-txt{flex:1;display:flex;align-items:center;width:100%;padding-top:56px;padding-bottom:40px}
-/* tamanho pela largura, limitado pela altura (9svh) para caber em notebooks de tela baixa */
-.capa h1{font-size:clamp(2.25rem,1.2rem + 5.4vw,5rem);font-size:min(clamp(2.25rem,1.2rem + 5.4vw,5rem),9svh);
-line-height:1.06;font-weight:800;letter-spacing:-.02em;margin:0;max-width:18ch;text-wrap:balance;
+/* tamanho pela largura, limitado pela altura (9,5svh) para caber em notebooks de tela baixa.
+   A Lato tem altura de x menor e é mais estreita que a fonte anterior: tamanhos ~6% maiores e menos aperto */
+.capa h1{font-size:clamp(2.4rem,1.3rem + 5.7vw,5.3rem);font-size:min(clamp(2.4rem,1.3rem + 5.7vw,5.3rem),9.5svh);
+line-height:1.06;font-weight:900;letter-spacing:-.01em;margin:0;max-width:18ch;text-wrap:balance;
 font-variant-numeric:lining-nums proportional-nums}
 .capa-pe{width:100%;padding-bottom:24px}
-.rolar{display:inline-flex;align-items:center;gap:8px;padding:8px 0;font:500 .9rem/1.2 var(--f-tit);color:var(--suave);
+.rolar{display:inline-flex;align-items:center;gap:8px;padding:8px 0;font:700 .9rem/1.2 var(--f-tit);color:var(--suave);
 text-decoration:none}
 .rolar:hover{color:var(--tinta)}
 @media (prefers-reduced-motion:no-preference){.rolar svg{animation:descer 1.6s ease-in-out .8s 3}}
@@ -822,21 +823,21 @@ border-top:2px solid var(--tinta)}
 .gabarito li+li{padding-left:20px;border-left:1px solid var(--linha)}
 .gabarito a{display:block;text-decoration:none}
 .gabarito a:hover .leg{text-decoration:underline}
-.gabarito .topo{display:flex;align-items:center;gap:10px;color:var(--suave);font:500 .85rem/1.2 var(--f-tit)}
+.gabarito .topo{display:flex;align-items:center;gap:10px;color:var(--suave);font:700 .85rem/1.2 var(--f-tit)}
 .gabarito .bola{width:1.35em;height:1.35em;font-size:.72rem;background:var(--marca);border-color:var(--marca);color:var(--papel)}
-.num{display:block;font-size:clamp(2.1rem,1.4rem + 2vw,3rem);font-weight:800;line-height:1;
-letter-spacing:-.02em;margin:14px 0 8px;font-variant-numeric:lining-nums proportional-nums}
-.num small{font-size:.42em;font-weight:600;letter-spacing:0;margin-left:4px;color:var(--suave)}
+.num{display:block;font-size:clamp(2.25rem,1.5rem + 2.1vw,3.2rem);font-weight:900;line-height:1;
+letter-spacing:-.01em;margin:14px 0 8px;font-variant-numeric:lining-nums proportional-nums}
+.num small{font-size:.42em;font-weight:700;letter-spacing:0;margin-left:4px;color:var(--suave)}
 .leg{display:block;font-size:.95rem;line-height:1.45;color:var(--suave)}
 
 /* seções e gráficos */
 .secao{padding:56px 0 8px;border-bottom:1px solid var(--linha);scroll-margin-top:56px}
 .sec-cab{display:flex;gap:16px;align-items:flex-start;margin-bottom:12px}
-.sec-cab h2{font-size:clamp(1.6rem,1.2rem + 1.4vw,2.2rem);line-height:1.1;font-weight:700;margin:2px 0 8px}
+.sec-cab h2{font-size:clamp(1.7rem,1.25rem + 1.5vw,2.35rem);line-height:1.1;font-weight:700;margin:2px 0 8px}
 .sec-cab p{margin:0;max-width:64ch;color:var(--suave)}
 .graf{margin:36px 0 28px;min-width:0}
 .graf figcaption{max-width:70ch}
-.graf h3{font-size:1.28rem;line-height:1.25;font-weight:600;margin:0 0 6px;text-wrap:balance}
+.graf h3{font-size:1.36rem;line-height:1.25;font-weight:700;margin:0 0 6px;text-wrap:balance}
 .graf figcaption p{margin:0 0 10px;font-size:.95rem;color:var(--suave)}
 .plot{min-width:0}
 .plot,.plot .js-plotly-plot,.plot .js-plotly-plot *{touch-action:pan-y;-webkit-tap-highlight-color:transparent}
@@ -844,12 +845,12 @@ letter-spacing:-.02em;margin:14px 0 8px;font-variant-numeric:lining-nums proport
 .filtros{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px 16px;align-items:end;margin:4px 0 10px;
 padding:14px 0;border-top:1px solid var(--linha);border-bottom:1px solid var(--linha)}
 .campo{display:flex;flex-direction:column;gap:4px;min-width:0}
-.campo label{font:600 .78rem/1.2 var(--f-tit);color:var(--suave)}
-.campo select,#f-limpar{font:500 .92rem/1.2 var(--f-tit);color:var(--tinta);background:var(--papel);
+.campo label{font:700 .78rem/1.2 var(--f-tit);color:var(--suave)}
+.campo select,#f-limpar{font:700 .92rem/1.2 var(--f-tit);color:var(--tinta);background:var(--papel);
 border:1px solid var(--linha-f);border-radius:4px;padding:8px 9px;min-width:0;width:100%}
 #f-limpar{border-color:var(--tinta);cursor:pointer}
 #f-limpar:hover{background:var(--linha)}
-.mapa-status{font:500 .9rem/1.4 var(--f-tit);color:var(--suave);margin:0 0 6px}
+.mapa-status{font:700 .9rem/1.4 var(--f-tit);color:var(--suave);margin:0 0 6px}
 .mapa-status .aprox{display:block;font-weight:400;font-style:italic}
 .mapa-status .aprox[hidden]{display:none}
 .par{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px}
@@ -858,25 +859,25 @@ border:1px solid var(--linha-f);border-radius:4px;padding:8px 9px;min-width:0;wi
 /* indicadores */
 .eixo{border-top:1px solid var(--linha)}
 .eixo:last-child{border-bottom:1px solid var(--linha)}
-.eixo summary{display:flex;align-items:center;gap:12px;padding:16px 0;cursor:pointer;list-style:none;font-size:1.08rem;font-weight:600}
+.eixo summary{display:flex;align-items:center;gap:12px;padding:16px 0;cursor:pointer;list-style:none;font-size:1.08rem;font-weight:700}
 .eixo summary::-webkit-details-marker{display:none}
 .eixo summary::after{content:"";margin-left:8px;width:9px;height:9px;border-right:2px solid var(--suave);
 border-bottom:2px solid var(--suave);transform:rotate(45deg) translateY(-3px)}
 .eixo[open] summary::after{transform:rotate(-135deg) translateY(-2px)}
 .eixo[open] summary .bola{background:var(--marca);border-color:var(--marca);color:var(--papel)}
-.eixo-n{margin-left:auto;font-size:.85rem;font-weight:500;color:var(--suave)}
+.eixo-n{margin-left:auto;font-size:.85rem;font-weight:700;color:var(--suave)}
 .kpis{width:100%;border-collapse:collapse;margin:0 0 20px;font-size:.95rem}
 .kpis th,.kpis td{text-align:left;vertical-align:baseline;padding:11px 12px 11px 0;border-top:1px solid var(--linha)}
 .kpis th{font-weight:400;width:46%}
-.kpi-i{display:inline-block;min-width:2.2em;color:var(--suave);font:500 .8rem var(--f-tit)}
+.kpi-i{display:inline-block;min-width:2.2em;color:var(--suave);font:700 .8rem var(--f-tit)}
 .kpi-v{font:700 1.2rem/1.2 var(--f-tit);white-space:nowrap;font-variant-numeric:proportional-nums}
-.kpi-v small{font-size:.75rem;font-weight:500;color:var(--suave);margin-left:2px}
+.kpi-v small{font-size:.75rem;font-weight:700;color:var(--suave);margin-left:2px}
 .kpi-o{color:var(--suave);font-size:.88rem}
 
 footer{padding:40px 0 56px;color:var(--suave);font-size:.92rem}
 footer p{max-width:72ch;margin:0 0 10px}
 
-/* menu: com os rótulos, os itens precisam de ~640 px (~855 px com a marca); entre 881 e 1000 px o espaçamento
+/* menu: com os rótulos (Lato), os itens precisam de ~560 px (~770 px com a marca); entre 881 e 1000 px o espaçamento
    aperta, e até 880 px ficam só as bolinhas numeradas (o rótulo continua para leitores de tela) */
 @media (max-width:1000px){.menu .w{gap:16px}.menu ol{gap:0}.menu a.it{padding:6px 7px;gap:6px}}
 @media (max-width:880px){.menu .rot{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
@@ -1028,7 +1029,7 @@ PAGINA = """<!doctype html>
 <meta name="description" content="__DESCRICAO__">
 <meta name="color-scheme" content="light dark">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
 __PLOTLY__
 <style>__CSS__</style></head><body>
 <nav class="menu" aria-label="Seções"><div class="w">
