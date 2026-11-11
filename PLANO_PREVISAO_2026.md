@@ -37,6 +37,19 @@ O nome técnico é **validação fora do tempo**. O modelo só viu um ano, entã
     médio por UF é de **9,3 pontos** (6,4 ponderado por alunos); correlação de posições = 0,85; maiores erros em
     TO (+26,9) e RN (−16,7). RR tem só 20 alunos no teste (média instável, avisado no site).
   - Para rodar, scikit-learn 1.9.1, imbalanced-learn e joblib foram instalados na área do usuário da `python3.11`.
+- **Etapas de 14–19/11 concluídas** (branch `validacao-2025`; detalhes em `docs/equivalencia_2023_2025.md`):
+  - Equivalência 2023 × 2025: renda passou de Q006 para Q007 (mesmas faixas em salários mínimos), `TP_ESCOLA` virou
+    Q023, internet virou wi-fi (Q020). Asserts protegem a troca Q006/Q007.
+  - `baixar_ano.py`: amostra de 4% por UF de PARTICIPANTES 2025 (72.425 linhas, commitada antes da previsão).
+    Conferência do universo: −4,0% de inscritos no total, 11 UFs acima de 5%; calibração com 2023
+    (`calibrar_universo.py`) estima viés de 1,4 ponto em 2025, usado só como sensibilidade.
+  - **Previsão cega** (`prever_2025.py` → `resultados/previsao_2025.json`, commit `3eee3c2`), enviada ao GitHub antes
+    de ler qualquer nota de 2025.
+  - **Realidade** (`realidade_2025.py` → `resultados/validacao_2025.json`): MAE por UF A 12,98, B 12,85, **C 10,66**;
+    C erra menos que A nas 15 combinações de sensibilidade, mas o intervalo de 95% da vantagem inclui zero. A mudança
+    de perfil explica 31% da queda nacional; a redação (−47,7 pontos) responde por 75% dela.
+  - Notebook `Validacao_2023_2025.ipynb` (entrega), executado.
+  - Site: seção "Expectativa × realidade: 2025" (versão enxuta em 19/11; completa em 20–21/11).
 
 ## 3. Obstáculos que definem o desenho
 
@@ -80,11 +93,11 @@ A redação fica separada: não usa a TRI, então não é comparável entre anos
 | 10–11/11 | Primeira tela só com a manchete | Merge da branch `primeira-tela` (**concluído**) |
 | 12–13/11 | `CLAUDE.md` + branch `validacao-2025` + congelar o modelo | `resultados/modelos/` com JSON de metadados (**concluído**) |
 | 12–13/11 | Gráfico previsto × real por UF no teste de 2023 e mapa dos erros | Seção nova em "O que os modelos dizem" (**concluído**) |
-| 14–15/11 | Ler os dicionários de 2025, montar a tabela de equivalência de colunas e de códigos | `docs/equivalencia_2023_2025.md` |
-| 16–17/11 | `baixar_ano.py --ano 2025`: download e amostra dos dois arquivos | `dados/processados/enem2025_participantes.parquet` e `enem2025_resultados_uf.csv` (já agregado) |
-| 18/11 | Previsões A, B e C (teste cego) | `resultados/previsao_2025.json`, commitado antes da realidade |
-| 19/11 | Realidade e métricas | Notebook `Validacao_2023_2025.ipynb` e `resultados/validacao_2025.json` |
-| 20–21/11 | Seção no site "Expectativa × realidade: 2025" | Previsto × real por UF, mapa do erro, tabela A/B/C, frase-síntese gerada dos dados |
+| 14–15/11 | Ler os dicionários de 2025, montar a tabela de equivalência de colunas e de códigos | `docs/equivalencia_2023_2025.md` (**concluído**) |
+| 16–17/11 | `baixar_ano.py --ano 2025`: download e amostra dos dois arquivos | `dados/processados/enem2025_participantes.parquet` e `enem2025_resultados_uf.csv` (já agregado) (**concluído**; o agregado de notas só depois da previsão) |
+| 18/11 | Previsões A, B e C (teste cego) | `resultados/previsao_2025.json`, commitado antes da realidade (**concluído**, commit `3eee3c2`) |
+| 19/11 | Realidade e métricas | Notebook `Validacao_2023_2025.ipynb` e `resultados/validacao_2025.json` (**concluído**) |
+| 20–21/11 | Seção no site "Expectativa × realidade: 2025" | Previsto × real por UF, mapa do erro, tabela A/B/C, frase-síntese gerada dos dados (versão enxuta **concluída**; completa em andamento) |
 | 22/11 | README, verificação, merge na `main` | Site publicado |
 | 23/11 | Entrega | — |
 

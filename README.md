@@ -41,6 +41,23 @@ Amostra de **56.048** concluintes do ensino médio (4% de cada UF), dos quais **
 
 Os números vêm de [`resultados/metricas_entrega2.json`](resultados/metricas_entrega2.json), que o notebook da Entrega 2 grava ao ser executado.
 
+## Validação 2025: o modelo de 2023 testado no ENEM 2025
+
+O modelo de 2023 foi congelado e usado, sem ajuste, para prever às cegas a nota média de cada UF no ENEM 2025 a partir do perfil dos inscritos. A previsão foi commitada antes de as notas de 2025 serem lidas, e o histórico do Git registra a ordem. Na comparação com a realidade, o modelo com o perfil de 2025 erra menos que repetir as médias de 2023, mas, com só 27 UFs, a vantagem não é estatisticamente conclusiva. A maior parte da queda da nota final vem da redação, que não usa a TRI. Os números estão em [`resultados/validacao_2025.json`](resultados/validacao_2025.json), no notebook e na seção "Expectativa × realidade: 2025" do site.
+
+| Arquivo | O que faz |
+|---|---|
+| [`Validacao_2023_2025.ipynb`](Validacao_2023_2025.ipynb) | Notebook da entrega: passo a passo, comparação e respostas |
+| [`congelar_modelo.py`](congelar_modelo.py) | Congela a regressão e o modelo de presença em `resultados/modelos/` (com SHA-256) |
+| [`baixar_ano.py`](baixar_ano.py) | Baixa os microdados de 2025, amostra PARTICIPANTES e confere o universo |
+| [`calibrar_universo.py`](calibrar_universo.py) | Calibra com 2023 o universo aproximado usado na realidade |
+| [`prever_2025.py`](prever_2025.py) | Previsão cega: `resultados/previsao_2025.json` |
+| [`realidade_2025.py`](realidade_2025.py) | Lê as notas de 2025 e compara: `resultados/validacao_2025.json` |
+| [`docs/equivalencia_2023_2025.md`](docs/equivalencia_2023_2025.md) | Variáveis de 2023 × 2025, conferência, calibração e Pé-de-Meia |
+| [`PLANO_PREVISAO_2026.md`](PLANO_PREVISAO_2026.md) | Plano e cronograma da validação |
+
+Para refazer: `congelar_modelo.py` (só na primeira vez), `baixar_ano.py --ano 2025`, `calibrar_universo.py`, `prever_2025.py` e `realidade_2025.py`, nessa ordem. Os microdados ficam em `dados/brutos/`, fora do Git.
+
 ## Fontes de dados
 
 | Base | Fonte | Ano | Uso |

@@ -754,7 +754,7 @@ def grafico_previsto_real(g, regiao, rotulo_n="Alunos no teste"):
                        dados_desktop=[({"mode": "markers+text"}, list(range(1, n + 1)))])
 
 
-def grafico_mapa_erros(g, js):
+def grafico_mapa_erros(g, js, rotulo_n="Alunos no teste"):
     """Mapa do erro (previsto − real) por UF no teste. A malha vem do mapa da seção 1 (o JS copia ao carregar)."""
     erro = g["erro"].reindex(js["ufs"])
     lim = float(np.ceil(erro.abs().max() / 5) * 5)
@@ -771,7 +771,7 @@ def grafico_mapa_erros(g, js):
                       x=0.5, xanchor="center", y=0, yanchor="top", tickmode="array", tickvals=marcas,
                       ticktext=[_sinal(v) or "0" for v in marcas]),
         hovertemplate="<b>%{customdata[0]}</b><br>Erro: %{z:+.1~f} pts<br>Prevista: %{customdata[1]:.1~f} pts"
-                      "<br>Real: %{customdata[2]:.1~f} pts<br>Alunos no teste: %{customdata[3]}<extra></extra>")
+                      "<br>Real: %{customdata[2]:.1~f} pts<br>" + rotulo_n + ": %{customdata[3]:,.0f}<extra></extra>")
     _base(fig, 560).update_layout(
         margin=dict(l=0, r=0, t=0, b=50),
         geo=dict(fitbounds="locations", visible=False, bgcolor="rgba(0,0,0,0)", projection=dict(type="mercator")))
@@ -829,8 +829,17 @@ def _data_commit(h):
         return None
 
 
-def secao_validacao(regiao):
-    """(texto de abertura, conteúdo) da seção, ou None se a validação ainda não foi feita."""
+ARQ_CALIBRACAO = RAIZ / "resultados" / "calibracao_universo_2023.json"
+FONTE_PE_DE_MEIA = ("https://www.gov.br/mec/pt-br/assuntos/noticias/2025/novembro/"
+                    "participante-do-pe-de-meia-pode-ganhar-r-200-extra-se-fizer-enem")
+NOMES_PROVA = {"NU_NOTA_CN": "Ciências da Natureza", "NU_NOTA_CH": "Ciências Humanas", "NU_NOTA_LC": "Linguagens",
+               "NU_NOTA_MT": "Matemática", "NU_NOTA_REDACAO": "Redação"}
+
+
+def secao_validacao(regiao, js_mapa):
+    """(texto de abertura, conteúdo) da seção, ou None se a validação ainda não foi feita.
+    Números de resultados/previsao_2025.json, resultados/validacao_2025.json e (crescimento do público)
+    resultados/calibracao_universo_2023.json."""
     if not (ARQ_PREVISAO_2025.exists() and ARQ_VALIDACAO_2025.exists()):
         print("Aviso: previsao_2025.json ou validacao_2025.json não encontrado; seção de 2025 omitida.")
         return None
@@ -849,27 +858,75 @@ def secao_validacao(regiao):
     dek = ("O modelo de 2023 previu às cegas a nota média de cada UF no ENEM 2025, a partir só do perfil dos inscritos "
            "de 2025. A previsão foi gravada no GitHub antes de as notas de 2025 serem abertas: commit "
            f'<a href="{REPO}/commit/{h}"><code>{h[:7]}</code></a>' + (f", de {data}" if data else "") + ".")
-    if mae_c < mae_a:
-        titulo = (f"O modelo errou {_num(mae_c)} pontos por UF em média, menos que os {_num(mae_a)} de repetir as médias "
-                  "de 2023")
-    else:
-        titulo = (f"O modelo errou {_num(mae_c)} pontos por UF em média, sem superar os {_num(mae_a)} de repetir as médias "
-                  "de 2023")
+
+    # 1) previsto × real (mesma precisão nos dois números do título)
+    comp = "menos que" if mae_c < mae_a else "sem superar"
+    titulo = (f"O modelo errou {_br(mae_c, 1)} pontos por UF em média, {comp} os {_br(mae_a, 1)} de repetir as médias "
+              "de 2023")
     sub = (f"Cada ponto é uma UF: nota final média prevista pelo modelo congelado e média real de 2025, com "
            f"{_br(val['alunos_real'], 0)} alunos. Abaixo da diagonal, a UF ficou abaixo do previsto. Cor e símbolo "
            "indicam a região.")
     conteudo = _figura(titulo, sub, _assinatura(grafico_previsto_real(g, regiao, rotulo_n="Alunos em 2025")).to_html(
         full_html=False, include_plotlyjs=False, config=CFG))
 
-    red = val["diferenca_nacional_por_prova"]["NU_NOTA_REDACAO"]
-    total = sum(d["contribuicao_nota_final"] for d in val["diferenca_nacional_por_prova"].values())
+    # 2) mapa do erro de C
+    acima, abaixo = int((g["erro"] > 0).sum()), int((g["erro"] < 0).sum())
+    u_max, u_min = g["erro"].idxmax(), g["erro"].idxmin()
+    conteudo += _figura(
+        f"O modelo previu acima do real em {acima} UFs e abaixo em {abaixo}; os maiores erros são em {u_max} "
+        f"({_sinal(g.loc[u_max, 'erro'])}) e {u_min} ({_sinal(g.loc[u_min, 'erro'])})",
+        "Erro = nota final média prevista − média real de 2025. Azul: o modelo previu acima do real; laranja: abaixo; "
+        "quanto mais intensa a cor, maior o erro.",
+        '<div class="plot">' + _assinatura(grafico_mapa_erros(g, js_mapa, rotulo_n="Alunos em 2025")).to_html(
+            full_html=False, include_plotlyjs=False, config=CFG, div_id="mapa-erros-2025") + "</div>")
+
+    # 3) tabela A × B × C
+    def s1(v):  # sinal com uma casa sempre (o _sinal do site corta o ',0')
+        return ("+" if v > 0 else "−" if v < 0 else "") + _br(abs(v), 1)
+
+    boot = val["bootstrap_A_vs_C"]
+    nomes = {"A": "Repetir as médias de 2023", "B": "Modelo + perfil de 2023", "C": "Modelo + perfil de 2025"}
+    linhas = "".join(f'<tr><td><b>{c}</b> <span class="desc">{nomes[c]}</span></td>'
+                     f"<td>{_br(t[c]['MAE'], 1)}</td><td>{_br(t[c]['MAE_ponderado'], 1)}</td>"
+                     f"<td>{s1(t[c]['vies'])}</td><td>{_br(t[c]['spearman'], 2)}</td></tr>" for c in "ABC")
+    lo, hi = boot["IC95"]
+    conclusivo = lo > 0
+    conteudo += (
+        '<div class="bloco"><h3>As três previsões lado a lado</h3>'
+        "<p>Erro por UF, em pontos. Ponderado: estados com mais alunos contam mais. Viés: positivo quando a previsão ficou "
+        "acima da realidade. Spearman: quanto a previsão acerta a ordem dos estados (1 = perfeita).</p>"
+        '<div class="rolavel"><table class="comp"><thead><tr><th>Previsão</th><th>Erro médio</th><th>Erro ponderado</th>'
+        f"<th>Viés</th><th>Spearman</th></tr></thead><tbody>{linhas}</tbody></table></div>"
+        f"<p>Com só 27 UFs, a vantagem de C sobre A ({_br(boot['MAE_A_menos_MAE_C'], 1)} pontos) "
+        + ("se mantém na reamostragem" if conclusivo else "não é estatisticamente conclusiva")
+        + f": o intervalo de 95% vai de {s1(lo)} a {s1(hi)} pontos"
+        + ("." if conclusivo else " e inclui zero.") + "</p></div>")
+
+    # 4) provas e redação
+    dec = val["diferenca_nacional_por_prova"]
+    red = dec["NU_NOTA_REDACAO"]
+    total = sum(d["contribuicao_nota_final"] for d in dec.values())
     parte = red["contribuicao_nota_final"] / total
     sentido_red, sentido_tot = ("caiu", "queda") if red["diferenca"] < 0 else ("subiu", "alta")
-    frase = (f"A redação {sentido_red} {_num(abs(red['diferenca']))} pontos de 2023 para 2025 e "
-             + (f"explica a maior parte da {sentido_tot} da nota final média ({_br(parte * 100, 0)}%)" if parte > 0.5 else
-                f"explica {_br(parte * 100, 0)}% da {sentido_tot} da nota final média")
-             + ". A causa (mudança na prova ou na correção) é uma hipótese não verificada.")
-    return dek, conteudo + f'<p class="obs">{frase}</p>'
+    itens = "".join(f"<li>{NOMES_PROVA[c]}: {s1(d['diferenca'])} pontos</li>" for c, d in dec.items())
+    conteudo += (
+        f'<div class="bloco"><h3>A redação {sentido_red} {_br(abs(red["diferenca"]), 1)} pontos e explica '
+        + ("a maior parte" if parte > 0.5 else f"{_br(parte * 100, 0)}%") + f" da {sentido_tot} da nota final</h3>"
+        "<p>Variação da média nacional de cada prova de 2023 para 2025, entre quem fez as cinco provas:</p>"
+        f"<ul>{itens}</ul>"
+        f"<p>A redação responde por {_br(parte * 100, 0)}% da mudança da nota final média. Ela não usa a TRI, a escala "
+        "feita para comparar anos; a causa (mudança na prova ou na correção) é uma hipótese não verificada, e o modelo "
+        "não tem como prevê-la, porque não depende do perfil dos alunos.</p></div>")
+
+    # 5) crescimento do público
+    if ARQ_CALIBRACAO.exists():
+        cal = json.loads(ARQ_CALIBRACAO.read_text(encoding="utf-8"))
+        conteudo += (
+            f'<p class="obs">O público também mudou: de {_br(cal["universo_2023"], 0)} concluintes inscritos em 2023 para '
+            f'{_br(cal["universo_2025"], 0)} em 2025 ({"+" if cal["crescimento_universo"] > 0 else "−"}{_br(abs(cal["crescimento_universo"]) * 100, 0)}%). No mesmo período '
+            f'passou a valer o bônus do Pé-de-Meia para alunos da rede pública que fazem os dois dias do ENEM '
+            f'(<a href="{FONTE_PE_DE_MEIA}">MEC</a>); se ele explica o crescimento é uma hipótese não verificada.</p>')
+    return dek, conteudo
 
 
 # --------------------------------------------------------------------------
@@ -1001,6 +1058,14 @@ letter-spacing:-.01em;margin:14px 0 8px;font-variant-numeric:lining-nums proport
 .graf h3{font-size:1.36rem;line-height:1.25;font-weight:700;margin:0 0 6px;text-wrap:balance}
 .graf figcaption p{margin:0 0 10px;font-size:.95rem;color:var(--suave)}
 .secao>p.obs{max-width:70ch;margin:0 0 36px;font-size:.95rem;color:var(--suave)}
+.bloco{margin:36px 0 28px;max-width:70ch}.bloco h3{font-size:1.36rem;line-height:1.25;font-weight:700;margin:0 0 6px;text-wrap:balance}
+.bloco p{margin:0 0 10px;font-size:.95rem;color:var(--suave)}.bloco ul{margin:6px 0 10px;padding-left:20px;font-size:.95rem}
+.rolavel{overflow-x:auto}.comp{border-collapse:collapse;font-size:.95rem;margin:8px 0 10px;min-width:100%}
+.comp th,.comp td{padding:8px 12px 8px 0;border-top:1px solid var(--linha);text-align:right;white-space:nowrap;font-variant-numeric:proportional-nums}
+.comp th:first-child,.comp td:first-child{text-align:left;white-space:normal}
+.comp thead th{font-weight:700;border-top:0;color:var(--suave);font-size:.85rem}
+@media (max-width:640px){.comp{font-size:.88rem}.comp th,.comp td{padding:8px 0 8px 8px;white-space:normal}
+.comp th:first-child,.comp td:first-child{padding-left:0;width:38%}.comp .desc{display:block;font-size:.78rem;line-height:1.3;color:var(--suave)}}
 .plot{min-width:0}
 .plot,.plot .js-plotly-plot,.plot .js-plotly-plot *{touch-action:pan-y;-webkit-tap-highlight-color:transparent}
 /* filtros do mapa */
@@ -1180,7 +1245,8 @@ function escala(){var t=escuro.matches?'escuro':'claro',g=D.cinza[t];
 window.addEventListener('load',function(){
   Plotly.restyle(gd,{geojson:[gd.data[0].geojson]},[1]);
   // o mapa dos erros (seção de modelos) usa a mesma malha, sem repeti-la no HTML
-  var ge=document.getElementById('mapa-erros');if(ge)Plotly.restyle(ge,{geojson:[gd.data[0].geojson]},[0]);
+  ['mapa-erros','mapa-erros-2025'].forEach(function(id){var ge=document.getElementById(id);
+    if(ge)Plotly.restyle(ge,{geojson:[gd.data[0].geojson]},[0]);});
   calcular();escala();
   selProva.addEventListener('change',calcular);selEscala.addEventListener('change',calcular);sels.forEach(function(s){s.addEventListener('change',calcular);});
   document.getElementById('f-limpar').addEventListener('click',function(){selProva.value='0';sels.forEach(function(s){s.value='-1';});calcular();});
@@ -1379,7 +1445,7 @@ def main():
         print(f"Aviso: {arq_res.relative_to(RAIZ)} não encontrado; a seção de modelos foi omitida "
               "(rode o notebook da Entrega 2 para gerá-lo).")
 
-    sec_2025 = secao_validacao(aux["tab_uf"]["REGIAO"])
+    sec_2025 = secao_validacao(aux["tab_uf"]["REGIAO"], js_mapa)
     if sec_2025:
         secoes.append(("validacao", len(secoes) + 1, "verde", "Validação 2025", "Expectativa × realidade: 2025", *sec_2025))
 
