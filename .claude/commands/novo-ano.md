@@ -1,5 +1,5 @@
 ---
-description: Incorpora um ano novo do ENEM com o agente-dados (ex.: /novo-ano 2026)
+description: "Incorpora um ano novo do ENEM com o agente-dados (ex.: /novo-ano 2026)"
 argument-hint: <ano>
 ---
 
