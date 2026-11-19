@@ -11,7 +11,7 @@ Autores: Marcos Feijó e Pedro Klein. Projeto de Ciência de Dados (CEUB, 2026) 
 1. **A desigualdade começa antes da prova.** Entre alunos de baixa renda, **29,6%** faltam à prova. Entre os de alta renda, **9,9%**. Mesmo contando só quem foi, a nota média vai de **506,2** (baixa renda) a **620,5** (alta renda).
 2. **A diferença entre escola privada e pública é grande, mas mais da metade dela some quando se comparam alunos parecidos.** A nota média é **616,1** na rede privada e **515,2** na pública. Controlando renda, escolaridade dos pais e acesso a recursos, a escola privada fica associada a **+43,4 pontos**. Na rede privada, **15,1%** dos alunos passam de 700 pontos. Na pública, **1,15%**.
 3. **Renda não é destino.** **14,3%** dos alunos de baixa renda tiraram mais de 600 pontos.
-4. **De 2023 para 2025, uma prova explica três quartos da queda da nota final** (no universo do estudo, que na realidade de 2025 é aproximado, ver abaixo). A média da redação foi de **630,5** para **582,7**, e só ela tirou **9,5** pontos da nota final. As provas objetivas se compensaram: Linguagens subiu **11,9** pontos, Humanas caiu **13,4** e Matemática caiu **16,8**. A redação não usa a TRI, então não dá para saber se caiu o desempenho ou mudou o critério de correção.
+4. **De 2023 para 2025, uma prova explica a maior parte da queda da nota final** (no universo do estudo, que na realidade de 2025 é aproximado, ver abaixo; a proporção exata depende dessa aproximação). A média da redação foi de **630,5** para **582,7**, e só ela tirou **9,5** pontos da nota final. As provas objetivas se compensaram só em parte: Linguagens subiu **11,9** pontos, Humanas caiu **13,4** e Matemática caiu **16,8**. A redação não usa a TRI, então não dá para saber se caiu o desempenho ou mudou o critério de correção.
 5. **O modelo errou para cima em 22 das 27 UFs e em todas as regiões (na média de cada uma).** Ele previu média nacional de **532,5** para 2025, e a real foi **524,1**. O erro médio por região foi de **+2,2** pontos no Sul a **+13,2** no Norte. E foi maior onde a nota real é menor (correlação **−0,66** entre o erro e a nota real dos estados). O projeto mede esse padrão, mas não sabe explicá-lo.
 
 Esses números vêm de [`resultados/metricas_entrega2.json`](resultados/metricas_entrega2.json) (2023) e de [`resultados/validacao_2025.json`](resultados/validacao_2025.json) (2025). Nenhum número deste README foi digitado sem origem nos arquivos de resultados.
@@ -19,7 +19,7 @@ Esses números vêm de [`resultados/metricas_entrega2.json`](resultados/metricas
 ## O teste: previsão cega
 
 1. **Congelar:** o modelo de 2023 (regressão da nota final e modelo de presença) foi salvo em `resultados/modelos/` com SHA-256. Nada foi reajustado depois.
-2. **Prever:** só com o arquivo de participantes de 2025 (perfil socioeconômico, sem notas), o modelo previu a nota média de cada UF. A previsão foi commitada e enviada ao GitHub no commit `3eee3c2`.
+2. **Prever:** só com o arquivo de participantes de 2025 (perfil socioeconômico, sem notas), o modelo previu a nota média de cada UF. Antes do commit, a previsão também leu do arquivo de resultados de 2025 a presença real em cada UF (só UF, rede da escola e presença, nenhuma nota), usada apenas na sensibilidade "presença calibrada". A previsão foi commitada e enviada ao GitHub no commit `3eee3c2`.
 3. **Conferir:** só então as notas de 2025 foram abertas (**1.288.485** alunos no universo da realidade).
 
 Os microdados de 2025 já eram públicos, então o teste é cego **por procedimento**, e não por cronologia. O histórico do Git registra a ordem.
@@ -32,7 +32,7 @@ Para separar as fontes de erro, foram feitas três previsões e comparado o erro
 | B. Modelo com o perfil de 2023 | O que se esperaria se nada tivesse mudado | 12,85 |
 | C. Modelo com o perfil de 2025 | Se as relações de 2023 ainda valem | 10,66 |
 
-**Leitura honesta:** a previsão C erra menos que repetir 2023 em todos os cenários de sensibilidade testados. Mas a vantagem média é de **2,33** pontos, com intervalo de 95% de **−0,37** a **5,04**, e o intervalo inclui zero. Em **95,2%** das **5.000** reamostragens (bootstrap) a previsão C ganhou. Com só 27 estados, não dá para chamar a diferença de conclusiva.
+**Leitura honesta:** a previsão C erra menos que repetir 2023 no cenário principal e também nos cenários de sensibilidade testados. Esses cenários usam a mesma realidade de 2025 e a mesma previsão A, então confirmam a direção, mas não contam como provas independentes. A vantagem média é de **2,33** pontos, com intervalo de 95% de **−0,37** a **5,04**, e o intervalo inclui zero. Em **95,2%** das **5.000** reamostragens (bootstrap) a previsão C ganhou. Com só 27 estados, não dá para chamar a diferença de conclusiva.
 
 ## O que este projeto não prova
 
@@ -40,7 +40,7 @@ Para separar as fontes de erro, foram feitas três previsões e comparado o erro
 - **Correlação de estados não vale para alunos.** O IDHM tem correlação de **0,71** com a nota média das UFs, mas são 27 médias. No modelo individual, o IDHM perde o efeito (**−7,3** pontos por desvio padrão) depois de controlar o perfil do aluno e a região.
 - **O modelo prevê médias de grupo, não alunos.** Ele explica **29,9%** da variância da nota individual (R² = 0,299).
 - **Não há ligação aluno a aluno em 2025.** Desde 2024 o INEP publica notas e questionário em arquivos separados, sem chave de ligação. A comparação é por médias de UF.
-- **O universo de 2025 é aproximado.** O arquivo de resultados não traz conclusão do ensino médio nem treineiro. A aproximação foi calibrada com 2023 e testada em cenários de sensibilidade (detalhes em [`docs/equivalencia_2023_2025.md`](docs/equivalencia_2023_2025.md)).
+- **O universo de 2025 é aproximado, e a aproximação não passou nos dois critérios que o projeto definiu antes de medir.** O arquivo de resultados não traz conclusão do ensino médio nem treineiro. Na conferência de 2025, parte das UFs ficou acima do limite de **5%** de diferença entre os dois arquivos. Na calibração com 2023, trocar o universo verdadeiro pelo aproximado mudou a média de cada UF em **11,0** pontos, em média, para um limite de **3**. O projeto decidiu seguir mesmo assim, antes de abrir as notas, e registrou a decisão. O viés dessa aproximação em 2025 foi estimado em **1,4** ponto por UF, em média, sob uma hipótese não verificada, e entra só como cenário de sensibilidade (detalhes em [`docs/equivalencia_2023_2025.md`](docs/equivalencia_2023_2025.md)).
 - **Explicações possíveis, não testadas:** a mudança no público do ENEM (o programa Pé-de-Meia não existia em 2023) e a mudança no critério da redação. Estão registradas como hipóteses, não como resultado.
 
 ## Pergunte ao projeto
@@ -96,7 +96,7 @@ Decisões e incoerências encontradas pelo caminho estão em [`docs/DECISOES.md`
 
 ### Como rodar
 
-Requer Python 3.12.
+Os notebooks das entregas foram testados com Python 3.12 (ver `requirements.txt`). O modelo congelado foi gravado com Python **3.11.9**, scikit-learn **1.9.1**, numpy **2.4.6**, pandas **3.0.6** e joblib **1.6.0** (registrado em [`resultados/modelos/modelos.json`](resultados/modelos/modelos.json)), e o notebook da validação rodou em Python 3.11.9. Para recarregar os arquivos `.joblib`, use essas versões: a carga em Python 3.12 não foi testada.
 
 ```bash
 python -m venv .venv

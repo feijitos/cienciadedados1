@@ -857,15 +857,24 @@ def secao_validacao(regiao, js_mapa):
     data = _data_commit(h)
     dek = ("O modelo de 2023 previu às cegas a nota média de cada UF no ENEM 2025, a partir só do perfil dos inscritos "
            "de 2025. A previsão foi gravada no GitHub antes de as notas de 2025 serem abertas: commit "
-           f'<a href="{REPO}/commit/{h}"><code>{h[:7]}</code></a>' + (f", de {data}" if data else "") + ".")
+           f'<a href="{REPO}/commit/{h}"><code>{h[:7]}</code></a>' + (f", de {data}" if data else "") + ". "
+           "Os microdados de 2025 já eram públicos, então o teste é cego por procedimento, e não por cronologia: "
+           "o histórico do Git registra a ordem.")
 
     # 1) previsto × real (mesma precisão nos dois números do título)
     comp = "menos que" if mae_c < mae_a else "sem superar"
+    # Ressalva escolhida pelo intervalo do bootstrap: some sozinha se o intervalo passar a excluir zero.
+    ressalva = ", mas a diferença não é conclusiva" if mae_c < mae_a and val["bootstrap_A_vs_C"]["IC95"][0] <= 0 else ""
     titulo = (f"O modelo errou {_br(mae_c, 1)} pontos por UF em média, {comp} os {_br(mae_a, 1)} de repetir as médias "
-              "de 2023")
+              f"de 2023{ressalva}")
+    calibracao_reprovada = (ARQ_CALIBRACAO.exists()
+                            and not json.loads(ARQ_CALIBRACAO.read_text(encoding="utf-8"))["justificada"])
     sub = (f"Cada ponto é uma UF: nota final média prevista pelo modelo congelado e média real de 2025, com "
-           f"{_br(val['alunos_real'], 0)} alunos. Abaixo da diagonal, a UF ficou abaixo do previsto. Cor e símbolo "
-           "indicam a região.")
+           f"{_br(val['alunos_real'], 0)} alunos. A média real vem de um universo aproximado, porque o arquivo de notas "
+           "de 2025 não informa quem concluiu o ensino médio"
+           + (", e essa aproximação ficou acima do critério de calibração definido antes" if calibracao_reprovada else "")
+           + f' (<a href="{REPO}/blob/main/docs/equivalencia_2023_2025.md">detalhes</a>). '
+           "Abaixo da diagonal, a UF ficou abaixo do previsto. Cor e símbolo indicam a região.")
     conteudo = _figura(titulo, sub, _assinatura(grafico_previsto_real(g, regiao, rotulo_n="Alunos em 2025")).to_html(
         full_html=False, include_plotlyjs=False, config=CFG))
 
@@ -916,9 +925,10 @@ def secao_validacao(regiao, js_mapa):
         + ("a maior parte" if parte > 0.5 else f"{_br(parte * 100, 0)}%") + f" da {sentido_tot} da nota final</h3>"
         "<p>Variação da média nacional de cada prova de 2023 para 2025, entre quem fez as cinco provas:</p>"
         f"<ul>{itens}</ul>"
-        f"<p>A redação responde por {_br(parte * 100, 0)}% da mudança da nota final média. Ela não usa a TRI, a escala "
-        "feita para comparar anos; a causa (mudança na prova ou na correção) é uma hipótese não verificada, e o modelo "
-        "não tem como prevê-la, porque não depende do perfil dos alunos.</p></div>")
+        f"<p>No universo do estudo, a redação responde por {_br(parte * 100, 0)}% da mudança da nota final média; esse "
+        "percentual depende de como o universo de 2025 foi aproximado. Ela não usa a TRI, a escala feita para comparar "
+        "anos. O modelo prevê só a nota final e não separa a redação; se a "
+        f"{sentido_tot} veio da correção ou de quem fez a prova não foi testado.</p></div>")
 
     # 5) crescimento do público
     if ARQ_CALIBRACAO.exists():
