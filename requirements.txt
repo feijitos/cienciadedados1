@@ -19,3 +19,6 @@ ipykernel==7.4.0
 nbconvert==7.17.1
 # Dashboard
 plotly==7.1.0
+
+# Verificação da entrega (ferramentas/verificar_entrega.py)
+mistune==3.4.0

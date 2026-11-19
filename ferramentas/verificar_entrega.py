@@ -153,6 +153,8 @@ def numeros_json(obj):
 
 meta = json.loads((RAIZ / "dados" / "processados" / "enem_amostra_meta.json").read_text(encoding="utf-8"))
 universo = set(numeros_json(res)) | set(numeros_json(meta))
+for extra in ("validacao_2025.json", "previsao_2025.json", "modelos/modelos.json"):  # validação 2023 x 2025
+    universo |= set(numeros_json(json.loads((RAIZ / "resultados" / extra).read_text(encoding="utf-8"))))
 for t in textos_saida(nb1) + textos_saida(nb2):  # números exibidos nos notebooks (formato en-US)
     for m in re.findall(r"\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+\.\d+|\d+", t):
         universo.add(float(m.replace(",", "")))
