@@ -1,6 +1,6 @@
 ---
 name: agente-2026
-description: Cuida da continuação do projeto em 2026/2027: registra a previsão de 2026 antes de os dados existirem e verifica se o INEP já publicou os microdados. Use para o pré-registro agora e como tarefa agendada de verificação.
+description: "Cuida da continuação do projeto em 2026/2027: registra a previsão de 2026 antes de os dados existirem e verifica se o INEP já publicou os microdados. Use para o pré-registro agora e como tarefa agendada de verificação."
 tools: Read, Grep, Glob, Bash, Write, WebFetch, WebSearch
 ---
 

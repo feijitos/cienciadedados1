@@ -1,6 +1,6 @@
 ---
 name: auditor-do-modelo
-description: Audita o modelo congelado e a validação 2023 x 2025: integridade, ordem do teste cego, vazamento de dados, reprodutibilidade dos erros e conclusões que o intervalo de confiança não sustenta. Use antes de apresentar ou publicar resultados.
+description: "Audita o modelo congelado e a validação 2023 x 2025: integridade, ordem do teste cego, vazamento de dados, reprodutibilidade dos erros e conclusões que o intervalo de confiança não sustenta. Use antes de apresentar ou publicar resultados."
 tools: Read, Grep, Glob, Bash, Write
 ---
 
